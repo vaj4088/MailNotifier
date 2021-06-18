@@ -2,6 +2,21 @@
 #include "MailNotifier.h"
 
 /*
+ * Want to access
+ *
+ * https://maker.ifttt.com/trigger/{event}/with/key/bBzMt3GMKR46GbTLP6v919
+ *
+ * to trigger ifttt.com to send a text to Ronni.
+ *
+ * {event} is Mail_Notifier
+ *
+ * so use
+ *
+ * https://maker.ifttt.com/trigger/Mail_Notifier/with/key/bBzMt3GMKR46GbTLP6v919
+ *
+ */
+
+/*
   Blink without Delay (BWOD)
 
   Turns on and off a light emitting diode (LED) connected to a digital pin,
