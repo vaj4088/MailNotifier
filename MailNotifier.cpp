@@ -16,6 +16,12 @@
  *
  * Also, use function snprintf to convert a number
  * (as in the password) to ASCII.
+ *
+ *  Private Network DHCP Info for gateway
+ *
+ *  Range
+ *        192.168.1.64 – 192.168.1.253
+ *
  */
 
 /*
