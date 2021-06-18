@@ -14,6 +14,8 @@
  *
  * https://maker.ifttt.com/trigger/Mail_Notifier/with/key/bBzMt3GMKR46GbTLP6v919
  *
+ * Also, use function snprintf to convert a number
+ * (as in the password) to ASCII.
  */
 
 /*
