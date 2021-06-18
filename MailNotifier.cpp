@@ -59,7 +59,7 @@ int ledState = LOW;             // ledState used to set the LED
 unsigned long previousMillis = 0;        // will store last time LED was updated
 
 // constants won't change:
-const unsigned long interval =1500 ;// interval at which to blink (milliseconds)
+const unsigned long interval = 250 ;// interval at which to blink (milliseconds)
 
 boolean delayingIsDone(unsigned long &since, unsigned long time) {
   // return false if we're still "delaying", true if time ms has passed.
