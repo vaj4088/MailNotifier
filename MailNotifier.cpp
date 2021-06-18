@@ -59,8 +59,18 @@ int ledState = LOW;             // ledState used to set the LED
 unsigned long previousMillis = 0;        // will store last time LED was updated
 
 // constants won't change:
-const unsigned long interval = 500 ;// interval at which to blink (milliseconds)
+const unsigned long interval =1500 ;// interval at which to blink (milliseconds)
 
+boolean delayingIsDone(unsigned long &since, unsigned long time) {
+  // return false if we're still "delaying", true if time ms has passed.
+  // this should look a lot like "blink without delay"
+  unsigned long currentmillis = millis();
+  if (currentmillis - since >= time) {
+    since = currentmillis;
+    return true;
+  }
+  return false;
+}
 void setup()
 {
 	  // set the digital pin as output:
@@ -75,18 +85,9 @@ void loop()
 	  // check to see if it's time to blink the LED; that is, if the difference
 	  // between the current time and last time you blinked the LED is bigger than
 	  // the interval at which you want to blink the LED.
-	  unsigned long currentMillis = millis();
-
-	  if (currentMillis - previousMillis >= interval) {
-	    // save the last time you blinked the LED
-	    previousMillis = currentMillis;
-
+	if (delayingIsDone(previousMillis, interval)) {
 	    // if the LED is off turn it on and vice-versa:
-	    if (ledState == LOW) {
-	      ledState = HIGH;
-	    } else {
-	      ledState = LOW;
-	    }
+		ledState = ledState==LOW?HIGH:LOW ;
 
 	    // set the LED with the ledState of the variable:
 	    digitalWrite(ledPin, ledState);
