@@ -22,6 +22,17 @@
  *  Range
  *        192.168.1.64 – 192.168.1.253
  *
+ *  Current Internet Connection
+ *  Type 	        Value
+ *  IP Address 	    45.17.221.124
+ *  Subnet Mask 	255.255.252.0
+ *  Default Gateway 45.17.220.1
+ *  Primary DNS 	68.94.156.9
+ *  Secondary DNS 	68.94.157.9
+ *  Host Name 	    dsldevice
+ *  MAC Address 	f8:2c:18:e4:b8:40
+ *  MTU 	        1500
+ *
  */
 
 /*
