@@ -91,8 +91,17 @@ boolean delayingIsDone(unsigned long &since, unsigned long time) {
 void setup()
 {
 	  // Serial
-	  Serial.begin(115200);
-	  Serial.println("Serial has been set up.");
+	  Serial.begin(115200) ;
+	  unsigned long preparing ;
+	  unsigned long const waitTime  = 4000 ; // milliseconds
+
+	  preparing = 0 ;
+	  while (!delayingIsDone(preparing, waitTime)) {}
+
+	  Serial.println("Serial has been set up.") ;
+
+	  preparing = 0 ;
+	  while (!delayingIsDone(preparing, waitTime)) {}
 
 	  // set the digital pin as output:
 	  pinMode(ledPin, OUTPUT);
