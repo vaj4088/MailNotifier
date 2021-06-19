@@ -93,15 +93,12 @@ void setup()
 	  // Serial
 	  Serial.begin(115200) ;
 	  unsigned long preparing ;
-	  unsigned long const waitTime  = 4000 ; // milliseconds
+	  unsigned long const waitTime  = 2000 ; // milliseconds
 
-	  preparing = 0 ;
+	  preparing = millis() ;
 	  while (!delayingIsDone(preparing, waitTime)) {}
 
 	  Serial.println("Serial has been set up.") ;
-
-	  preparing = 0 ;
-	  while (!delayingIsDone(preparing, waitTime)) {}
 
 	  // set the digital pin as output:
 	  pinMode(ledPin, OUTPUT);
