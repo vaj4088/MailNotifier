@@ -90,6 +90,10 @@ boolean delayingIsDone(unsigned long &since, unsigned long time) {
 }
 void setup()
 {
+	  // Serial
+	  Serial.begin(115200);
+	  Serial.println("Serial has been set up.");
+
 	  // set the digital pin as output:
 	  pinMode(ledPin, OUTPUT);
 }
@@ -108,5 +112,9 @@ void loop()
 
 	    // set the LED with the ledState of the variable:
 	    digitalWrite(ledPin, ledState);
+	    Serial.print("Pin ") ;
+	    Serial.print(ledPin) ;
+	    Serial.print(" has been set to ") ;
+	    Serial.println(ledState==LOW?"LOW.":"HIGH.") ;
 	  }
 }
