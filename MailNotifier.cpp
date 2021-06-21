@@ -125,14 +125,14 @@ void loop()
 	    // if the LED is off turn it on and vice-versa:
 		ledState = ledState==LOW?HIGH:LOW ;
 
-		const float VCC_ADJ = 1.096 ;
+		const float VCC_ADJ = 1.096/1000.0 ;
 		int voltageCount = ESP.getVcc() ;
 	    // set the LED with the ledState of the variable:
 	    digitalWrite(ledPin, ledState);
 	    Serial.print("Pin ") ;
 	    Serial.print(ledPin) ;
 	    Serial.print(" has been set to ") ;
-	    Serial.print(ledState==LOW?"LOW.":"HIGH.") ;
+	    Serial.print(ledState==LOW?" LOW.":"HIGH.") ;
 	    Serial.print("  Voltage reading is ") ;
 	    Serial.print(voltageCount) ;
 	    Serial.print(" which may be ") ;
