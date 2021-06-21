@@ -65,6 +65,14 @@
   http://www.arduino.cc/en/Tutorial/BlinkWithoutDelay
 */
 
+//
+//
+//
+ADC_MODE(ADC_VCC) ;  // Self VCC Read Mode
+//
+// NOTE that this line (above) must be OUTSIDE of any function.
+//
+
 // constants won't change. Used here to set a pin number:
 const int ledPin =  LED_BUILTIN;// the number of the LED pin
 
@@ -102,6 +110,7 @@ void setup()
 
 	  // set the digital pin as output:
 	  pinMode(ledPin, OUTPUT);
+
 }
 
 // The loop function is called in an endless loop
@@ -116,11 +125,18 @@ void loop()
 	    // if the LED is off turn it on and vice-versa:
 		ledState = ledState==LOW?HIGH:LOW ;
 
+		const float VCC_ADJ = 1.096 ;
+		int voltageCount = ESP.getVcc() ;
 	    // set the LED with the ledState of the variable:
 	    digitalWrite(ledPin, ledState);
 	    Serial.print("Pin ") ;
 	    Serial.print(ledPin) ;
 	    Serial.print(" has been set to ") ;
-	    Serial.println(ledState==LOW?"LOW.":"HIGH.") ;
+	    Serial.print(ledState==LOW?"LOW.":"HIGH.") ;
+	    Serial.print("  Voltage reading is ") ;
+	    Serial.print(voltageCount) ;
+	    Serial.print(" which may be ") ;
+	    Serial.print(VCC_ADJ*voltageCount) ;
+	    Serial.println(" volts.") ;
 	  }
 }
