@@ -107,6 +107,14 @@ void setup()
 	  while (!delayingIsDone(preparing, waitTime)) {}
 
 	  Serial.println("Serial has been set up.") ;
+	  //
+	  // Version information.
+	  //
+	  Serial.print("Compiled on ") ;
+	  Serial.print(__DATE__) ;
+	  Serial.print(" at ") ;
+	  Serial.print(__TIME__) ;
+	  Serial.println(" local time.") ;
 
 	  // set the digital pin as output:
 	  pinMode(ledPin, OUTPUT);
@@ -125,7 +133,8 @@ void loop()
 	    // if the LED is off turn it on and vice-versa:
 		ledState = ledState==LOW?HIGH:LOW ;
 
-		const float VCC_ADJ = 1.096/1000.0 ;
+//		const float VCC_ADJ = 1.096/1000.0 * (3.27/3.24)  ;
+		const float VCC_ADJ = 0.001106148148148  ;
 		int voltageCount = ESP.getVcc() ;
 	    // set the LED with the ledState of the variable:
 	    digitalWrite(ledPin, ledState);
