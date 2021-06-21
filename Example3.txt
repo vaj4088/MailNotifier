@@ -1,0 +1,137 @@
+from https://www.youtube.com/watch?v=IYuYTfO6iOs
+
+================================================================================
+================================================================================
+
+Also, measure Vcc using
+
+ADC_MODE(ADC_VCC) ;  // VCC Read Mode
+
+Vcc=ESP.getVcc()  ;  // Measure Vcc.
+
+NOTE:  ADC pin has to be open in this mode!
+
+================================================================================
+================================================================================
+
+
+Petrovjan
+Petrovjan
+4 years ago
+Just a tip to lower the consumption even more - before wifi.begin(), run also 
+wifi.config() with static IP, gateway, DNS and subnet. Also put channel and 
+BSSID/AP mac into the wifi.begin(). These two adjustments should decrease 
+the time it takes the ESP to join your wifi network 
+from 3-5 seconds to about 500 milliseconds.
+98
+Andreas Spiess
+Andreas Spiess
+4 years ago
+Thanks for the tips. I will try it.
+13
+The Fixman
+The Fixman
+2 years ago
+a this is HUGE IMPROVEMENT!!
+6
+Mukesh
+Mukesh
+2 years ago
+Please make a video on it
+1
+Ronny-André Bendiksen
+Ronny-André Bendiksen
+2 years ago
+Do you have a code example?
+Henry Schmale
+Henry Schmale
+2 years ago
+ @Ronny-André Bendiksen  you should probably read the wifi header in the library. They'll be multiple function overloads.
+1
+Tibor Herman
+Tibor Herman
+1 year ago
+That's very impressive! For the others, here is the code I'm using:
+char ssid[] = "yourSSID";    // your network SSID (name)
+char pass[] = "yourPassword"; // your network password (use for WPA, or use as key for WEP)
+int32_t channel = 8;
+IPAddress ip(192, 168, 0, 254);
+IPAddress subnet(255,255,255,0);
+IPAddress gateway(192,168,0,1);
+IPAddress dns(8,8,8,8);
+uint8_t bssid[] = {0x12,0x34,0x56,0x78,0x9A,0xBC};
+WiFi.forceSleepWake();
+  WiFi.mode(WIFI_STA);
+  yield();
+  WiFi.config(ip,dns,gateway,subnet);
+  WiFi.begin(ssid, pass, channel, bssid, true);
+  while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
+  }
+  Serial.println("Connected to WiFi");
+7
+Tibor Herman
+Tibor Herman
+1 year ago
+ @Noury nbenm   I'm not really sure, but I think it blocks your code until the WiFi stack does its job.
+1
+c2h7
+c2h7
+1 year ago (edited)
+I am currently getting 460ms total cycle time 
+(once in a while it's 1460ms for some reason) including wakeup, 
+Wifi connect (with pre-stored BSSID+Channel but no network config), 
+multiple DS18B20 reading, and sending the data via HTTP POST to an 
+influxDB container in the cloud. I store the millis() in RTC just 
+before deepsleeping and read (and log) them in the next cycle. 
+But I am currently just 2m away from the Wifi-AP,  
+not sure if that makes a big difference, will try going outside later. 
+I use an 14500 LiFePO4 cell directly connected, 
+no regulator (but a little risky since it starts at 3.7-3.8v when fully charged)
+
+Console log of one cycle (first column is millis(), 
+last line is the HTTP POST return result code (2xx = ok), 
+discarding that would be even faster):
+          61 Starting...
+         127 Sensor Index: 0 Temp: 25.250000
+         409 Sending Data: 1805AE VCC=3.38,t=0.45,T0=25.25
+         552 204
+
+
+EDIT: After moving the device outside (10m and 2 light walls away) 
+the cycle time is between 0.45 and 3.5s, on average 1.5s. 
+So the wifi signal strength does make a big difference. 
+On the other hand, I'm pretty convinced a bulk 
+transmission of 128 values (buffered in RTCmem) to influxdb 
+via http(s) will only take 1-2s since it's just one HTTP POST operation, 
+so I still expect very good battery life.
+5
+c2h7
+c2h7
+1 year ago (edited)
+Another improvement: If you set WiFi.persistent(true); 
+after WiFi.Begin() then the ESP core persists the data itself, 
+then after wakeup (or reset or powercycle) you just 
+use WiFi.waitForConnectResult() which is much faster than Wifi.Begin! 
+Now I consisently get wifi connect times of ~200ms, or <400ms 
+for the complete cycle, even after moving the device outside and 
+with RSSI values around -70. 
+Thanks to RedDogInCan on 
+https://www.reddit.com/r/esp8266/comments/9w6v5o/how_do_i_minimize_wifi_connection_time_from_power/ 
+for this info.
+17
+c2h7
+c2h7
+1 year ago
+@Andreas Spiess Unfortunately I don't have a microcurrent meter and so 
+I can't measure the power consumption of my approach to confirm 
+my forecast of >1 year on a battery with hourly data 
+uploads (each containing one reading per minute) and 
+daily OTA update-checks. In some places I read about ~60µA deepsleep current, 
+in others <10µA. Would you be willing to test my code on your 
+hardware (once connecting a lifepo4 battery directly to 
+the 3.3v pin of a NodeMCU, and once using a naked ESP-12F module with 
+only the reference circuit resistors@capacitors) and 
+measure the energy consumption for me? Please contact me at ea@etadar.de
+1
