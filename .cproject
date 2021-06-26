@@ -15,9 +15,9 @@
                     					
                     <extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
                     					
-                    <extension id="org.eclipse.cdt.core.MakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-                    					
                     <extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.MakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
                     				
                 </extensions>
                 			
@@ -33,15 +33,17 @@
                             							
                             <targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="io.sloeber.targetplatform.64205570" name="Arduino Target" osList="all" superClass="io.sloeber.targetplatform"/>
                             							
-                            <builder buildPath="${workspace_loc:/MailNotifier}/Release" id="io.sloeber.sketch.builder.642338356" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Arduino sketch builder" superClass="io.sloeber.sketch.builder"/>
+                            <builder buildPath="${workspace_loc:/MailNotifier}/Release" id="io.sloeber.sketch.builder.144004593" superClass="io.sloeber.sketch.builder"/>
                             							
                             <tool id="io.sloeber.tool.sketch.compiler.cpp.1322720131" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp">
                                 								
-                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.cpp.sketch.option.incpath.73041148" name="Include Paths (-I)" superClass="io.sloeber.compiler.cpp.sketch.option.incpath" valueType="includePath">
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.cpp.sketch.option.incpath.73041148" name="Include Paths (-I)" superClass="io.sloeber.compiler.cpp.sketch.option.incpath" useByScannerDiscovery="false" valueType="includePath">
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/core/core}&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/core/variant}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESP8266WiFi/src}&quot;"/>
                                     								
                                 </option>
                                 								
@@ -51,11 +53,13 @@
                             							
                             <tool id="io.sloeber.tool.compiler.c.1279214311" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c">
                                 								
-                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.c.sketch.option.incpath.1819370581" name="Include Paths (-I)" superClass="io.sloeber.compiler.c.sketch.option.incpath" valueType="includePath">
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.c.sketch.option.incpath.1819370581" name="Include Paths (-I)" superClass="io.sloeber.compiler.c.sketch.option.incpath" useByScannerDiscovery="false" valueType="includePath">
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/core/core}&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/core/variant}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESP8266WiFi/src}&quot;"/>
                                     								
                                 </option>
                                 								
@@ -70,6 +74,8 @@
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/core/core}&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/core/variant}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESP8266WiFi/src}&quot;"/>
                                     								
                                 </option>
                                 								
@@ -118,5 +124,19 @@
     </storageModule>
     	
     <storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+    	
+    <storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+    	
+    <storageModule moduleId="refreshScope" versionNumber="2">
+        		
+        <configuration configurationName="Release">
+            			
+            <resource resourceType="PROJECT" workspacePath="/MailNotifier"/>
+            		
+        </configuration>
+        	
+    </storageModule>
+    	
+    <storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
     
 </cproject>

@@ -1,6 +1,8 @@
 // Do not remove the include below
 #include "MailNotifier.h"
 
+#include "ESP8266WiFi.h"
+
 /*
  * Want to access
  *
@@ -32,6 +34,12 @@
  *  Host Name 	    dsldevice
  *  MAC Address 	f8:2c:18:e4:b8:40
  *  MTU 	        1500
+ *
+ *  Go to http://ivanzuzak.info/urlecho/
+ *
+ *  for information on how to use an
+ *  HTTP service for echoing the HTTP response
+ *  defined in the URL of the request.
  *
  */
 
@@ -81,10 +89,14 @@ int ledState = LOW;             // ledState used to set the LED
 
 // Generally, you should use "unsigned long" for variables that hold time
 // The value will quickly become too large for an int to store
-unsigned long previousMillis = 0;        // will store last time LED was updated
+unsigned long previousMillis = 0 ;       // will store last time LED was updated
+unsigned long lastScanMillis = 0 ;       // will store time of last Wifi scan.
 
 // constants won't change:
-const unsigned long interval = 250 ;// interval at which to blink (milliseconds)
+const unsigned long interval    =  250 ;// LED blink interval (milliseconds).
+const unsigned long SCAN_PERIOD = 5000 ;// Wifi scan interval (milliseconds).
+const boolean async = true ; // Scan in the background.
+const boolean showHidden = true ; // Scan shows hidden networks.
 
 boolean delayingIsDone(unsigned long &since, unsigned long time) {
   // return false if we're still "delaying", true if time ms has passed.
@@ -119,6 +131,10 @@ void setup()
 	  // set the digital pin as output:
 	  pinMode(ledPin, OUTPUT);
 
+	  WiFi.mode(WIFI_STA);
+	  WiFi.disconnect();  // In case we connected with saved parameters.
+	  delay(100);
+
 }
 
 // The loop function is called in an endless loop
@@ -147,5 +163,39 @@ void loop()
 	    Serial.print(" which may be ") ;
 	    Serial.print(VCC_ADJ*voltageCount) ;
 	    Serial.println(" volts.") ;
+	  }
+	if (delayingIsDone(lastScanMillis, SCAN_PERIOD)) {
+	    WiFi.scanNetworks(async, showHidden) ;
+	    Serial.print("\nScan start ... ") ;
+	}
+
+	  int n = WiFi.scanComplete();
+	  if(n >= 0) {
+	    Serial.printf("%d network(s) found\n", n);
+	    for (int i = 0; i < n; i++) {
+	    	const char * encryption ;
+	    	switch (WiFi.encryptionType(i)) {
+	    	case ENC_TYPE_NONE: encryption = "Open" ;
+	    	break ;
+	    	case ENC_TYPE_WEP:  encryption = "WEP" ;
+	    	break ;
+	    	case ENC_TYPE_TKIP: encryption = "WPA / PSK" ;
+	    	break ;
+	    	case ENC_TYPE_CCMP: encryption = "WPA2 / PSK" ;
+	    	break ;
+	    	case ENC_TYPE_AUTO: encryption = "WPA / WPA2 / PSK" ;
+	    	break ;
+	    	default: encryption = "unknown" ;
+	    	}
+	      Serial.printf("%d: %s, Ch:%d (%ddBm) %s %s\n",
+	    		  i+1,
+	    		  WiFi.SSID(i).c_str(),
+	    		  WiFi.channel(i),
+				  WiFi.RSSI(i),
+				  encryption,
+				  WiFi.isHidden(i)?"Hidden":"Open"
+				  ) ;
+	    }
+	    WiFi.scanDelete();
 	  }
 }
