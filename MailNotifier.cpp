@@ -137,6 +137,23 @@ void setup()
 
 }
 
+/*
+ * These functions are used for segregating Eclipse errors into a single place.
+ * These Eclipse errors are not real errors.
+ */
+
+char * ssidAsCString(int i) {
+	return WiFi.SSID(i).c_str() ;
+}
+
+int channelNumber(int i) {
+	return WiFi.channel(i) ;
+}
+
+int signalStrength (int i) {
+	return WiFi.RSSI(i) ;
+}
+
 // The loop function is called in an endless loop
 void loop()
 {
@@ -189,11 +206,11 @@ void loop()
 	    	}
 	      Serial.printf("%d: %s, Ch:%d (%ddBm) %s %s\n",
 	    		  i+1,
-	    		  WiFi.SSID(i).c_str(),
-	    		  WiFi.channel(i),
-				  WiFi.RSSI(i),
+	    		  ssidAsCString(i),
+	    		  channelNumber(i),
+				  signalStrength(i),
 				  encryption,
-				  WiFi.isHidden(i)?"Hidden":"Open"
+				  WiFi.isHidden(i)?"Hidden":"SSID is broadcast"
 				  ) ;
 	    }
 	    WiFi.scanDelete();
