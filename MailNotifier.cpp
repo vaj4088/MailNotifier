@@ -91,6 +91,8 @@ int ledState = LOW;             // ledState used to set the LED
 // The value will quickly become too large for an int to store
 unsigned long previousMillis = 0 ;       // will store last time LED was updated
 unsigned long lastScanMillis = 0 ;       // will store time of last Wifi scan.
+unsigned long scanStartMillis ;  // Start time of a scan, in milliseconds.
+unsigned long scanEndMillis   ;  // End   time of a scan, in milliseconds.
 
 // constants won't change:
 const unsigned long interval    =  250 ;// LED blink interval (milliseconds).
@@ -138,12 +140,20 @@ void setup()
 }
 
 /*
- * These functions are used for segregating Eclipse errors into a single place.
+ * These functions are used for isolating Eclipse errors into a single place.
  * These Eclipse errors are not real errors.
  */
 
-char * ssidAsCString(int i) {
-	return WiFi.SSID(i).c_str() ;
+void ssidAsCString(int i, char buf[32]) {
+//
+//	The following two lines should not be collapsed into one line until
+//	there is an update in Sloeber from Beryllium to another version of Eclipse
+//	that better handles these functions.
+//
+	String ssid = WiFi.SSID(i);
+	const char * tmp = ssid.c_str() ;
+//
+	strncpy(buf,tmp,32) ;
 }
 
 int channelNumber(int i) {
@@ -167,50 +177,66 @@ void loop()
 		ledState = ledState==LOW?HIGH:LOW ;
 
 //		const float VCC_ADJ = 1.096/1000.0 * (3.27/3.24)  ;
-		const float VCC_ADJ = 0.001106148148148  ;
-		int voltageCount = ESP.getVcc() ;
-	    // set the LED with the ledState of the variable:
+//		const float VCC_ADJ = 0.001106148148148  ;
+//		int voltageCount = ESP.getVcc() ;
+
 	    digitalWrite(ledPin, ledState);
-	    Serial.print("Pin ") ;
-	    Serial.print(ledPin) ;
-	    Serial.print(" has been set to ") ;
-	    Serial.print(ledState==LOW?" LOW.":"HIGH.") ;
-	    Serial.print("  Voltage reading is ") ;
-	    Serial.print(voltageCount) ;
-	    Serial.print(" which may be ") ;
-	    Serial.print(VCC_ADJ*voltageCount) ;
-	    Serial.println(" volts.") ;
+
+//	    Serial.print("Pin ") ;
+//	    Serial.print(ledPin) ;
+//	    Serial.print(" has been set to ") ;
+//	    Serial.print(ledState==LOW?" LOW.":"HIGH.") ;
+//	    Serial.print("  Voltage reading is ") ;
+//	    Serial.print(voltageCount) ;
+//	    Serial.print(" which may be ") ;
+//	    Serial.print(VCC_ADJ*voltageCount) ;
+//	    Serial.println(" volts.") ;
 	  }
 	if (delayingIsDone(lastScanMillis, SCAN_PERIOD)) {
 	    WiFi.scanNetworks(async, showHidden) ;
-	    Serial.print("\nScan start ... ") ;
+	    scanStartMillis = millis() ;
+//	    Serial.print("\nScan start ...\n") ;
 	}
 
 	  int n = WiFi.scanComplete();
 	  if(n >= 0) {
-	    Serial.printf("%d network(s) found\n", n);
+		  scanEndMillis = millis() ;
+	    Serial.printf("\n\n%2d network(s) found in %5lu. milliseconds.\n\n",
+	    		n,
+				scanEndMillis-scanStartMillis
+				);
+	    Serial.println(
+	    		"Name                             RSSI Channel Encryption       Availability") ;
+	    Serial.println(
+	    		"                                 (dBm) Number   Type") ;
+	    Serial.println(
+	    		"================================ ==== ======= ================ ============") ;
 	    for (int i = 0; i < n; i++) {
 	    	const char * encryption ;
 	    	switch (WiFi.encryptionType(i)) {
-	    	case ENC_TYPE_NONE: encryption = "Open" ;
+	    	case ENC_TYPE_NONE: encryption = "None" ;
 	    	break ;
 	    	case ENC_TYPE_WEP:  encryption = "WEP" ;
 	    	break ;
-	    	case ENC_TYPE_TKIP: encryption = "WPA / PSK" ;
+	    	case ENC_TYPE_TKIP: encryption = "WPA  / PSK" ;
 	    	break ;
 	    	case ENC_TYPE_CCMP: encryption = "WPA2 / PSK" ;
 	    	break ;
-	    	case ENC_TYPE_AUTO: encryption = "WPA / WPA2 / PSK" ;
+	    	case ENC_TYPE_AUTO: encryption = "WPA2 / PSK / WPA" ;
 	    	break ;
 	    	default: encryption = "unknown" ;
 	    	}
-	      Serial.printf("%d: %s, Ch:%d (%ddBm) %s %s\n",
-	    		  i+1,
-	    		  ssidAsCString(i),
-	    		  channelNumber(i),
+	    	char ssidBuffer[32] ;
+	    	ssidAsCString(i,ssidBuffer) ;
+	      Serial.printf("%-32s %4d %4d    %-16s %-s\n",
+//	    		  i+1,
+//	    		  ssidAsCString(i),
+//				  WiFi.SSID(i).c_str(),
+				  ssidBuffer,
 				  signalStrength(i),
+	    		  channelNumber(i),
 				  encryption,
-				  WiFi.isHidden(i)?"Hidden":"SSID is broadcast"
+				  WiFi.isHidden(i)?"Hidden":""
 				  ) ;
 	    }
 	    WiFi.scanDelete();

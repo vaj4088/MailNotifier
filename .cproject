@@ -33,7 +33,7 @@
                             							
                             <targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="io.sloeber.targetplatform.64205570" name="Arduino Target" osList="all" superClass="io.sloeber.targetplatform"/>
                             							
-                            <builder buildPath="${workspace_loc:/MailNotifier}/Release" id="io.sloeber.sketch.builder.144004593" superClass="io.sloeber.sketch.builder"/>
+                            <builder buildPath="${workspace_loc:/MailNotifier}/Release" id="io.sloeber.sketch.builder.144004593" keepEnvironmentInBuildfile="false" name="Arduino sketch builder" superClass="io.sloeber.sketch.builder"/>
                             							
                             <tool id="io.sloeber.tool.sketch.compiler.cpp.1322720131" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp">
                                 								
