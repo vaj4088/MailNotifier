@@ -199,6 +199,14 @@ void loop()
 	}
 
 	  int n = WiFi.scanComplete();
+	  /*
+	   *
+	   * If
+	   * n>0 or n==0 then n is the number of networks found.
+	   * n==-1 then scanning is still in progress.
+	   * n==-2 then scanning has not been triggered.
+	   *
+	   */
 	  if(n >= 0) {
 		  scanEndMillis = millis() ;
 	    Serial.printf("\n\n%2d network(s) found in %5lu. milliseconds.\n\n",
