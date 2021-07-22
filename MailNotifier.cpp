@@ -94,7 +94,22 @@ unsigned long lastScanMillis = 0 ;       // will store time of last Wifi scan.
 unsigned long scanStartMillis ;  // Start time of a scan, in milliseconds.
 unsigned long scanEndMillis   ;  // End   time of a scan, in milliseconds.
 
+boolean success ;
+int     status  ;
+
 // constants won't change:
+const char* ssid =     "********" ;
+const char* password = "********" ;
+const int bssid = 0 ;
+const int channel = 0 ;
+const boolean establishConnection = true ;
+
+IPAddress localIp( 192, 168,   1,  60) ;
+IPAddress gateway( 192, 168,   1, 254) ;
+IPAddress subnet ( 255, 255, 255,   0) ;
+IPAddress dns1   (  68,  94, 156,   9) ;
+IPAddress dns2   (  68,  94, 157,   9) ;
+
 const unsigned long interval    =  250 ;// LED blink interval (milliseconds).
 const unsigned long SCAN_PERIOD = 5000 ;// Wifi scan interval (milliseconds).
 const boolean async = true ; // Scan in the background.
@@ -134,9 +149,59 @@ void setup()
 	  pinMode(ledPin, OUTPUT);
 
 	  WiFi.mode(WIFI_STA);
-	  WiFi.disconnect();  // In case we connected with saved parameters.
-	  delay(100);
+		/*
+		 * Access by a station...
+		 *
+		 * Gateway local address is 192.168.1.254
+		 * Use 192.168.1.60 for MailboxNotifier IP address.
+		 * Subnet Mask 255.255.255.0
+		 * Primary   DNS 68.94.156.9
+		 * Secondary DNS 68.94.157.9
+		 *
+		 */
+	  success = WiFi.config(localIp, gateway, subnet, dns1, dns2) ;
+	  if (!success) {
+		  Serial.println("Could not configure.") ;
+		  while (true) ;
+	  }
+	  WiFi.begin(ssid, password, bssid, channel, establishConnection) ;
+	  status = WiFi.status() ;
+	  switch (status) {
+	  WL_CONNECTED:
+	  Serial.println
+	  ("Successful connection.") ;
+	  break ;
 
+	  WL_NO_SSID_AVAIL:
+	  Serial.println
+	  ("Failed to connect because configured SSID could not be reached.") ;
+	  break ;
+
+	  WL_CONNECT_FAILED:
+	  Serial.println
+	  ("Failed to connect because password is incorrect.") ;
+	  break ;
+
+	  WL_IDLE_STATUS:
+	  Serial.println
+	  ("WiFi status is changing.") ;
+	  break ;
+
+	  WL_DISCONNECTED:
+	  Serial.println
+	  ("Failed to connect because unit is not configure for station mode.") ;
+	  break ;
+
+	  default:
+		  Serial.println
+		  ("Failed to connect due to unknown reason.") ;
+		  break ;
+
+	  }
+	  if (status != WL_CONNECTED) {
+		  while (true) ;
+	  }
+	  WiFi.disconnect();
 }
 
 /*
@@ -144,25 +209,25 @@ void setup()
  * These Eclipse errors are not real errors.
  */
 
-void ssidAsCString(int i, char buf[32]) {
+//void ssidAsCString(int i, char buf[32]) {
 //
 //	The following two lines should not be collapsed into one line until
 //	there is an update in Sloeber from Beryllium to another version of Eclipse
 //	that better handles these functions.
 //
-	String ssid = WiFi.SSID(i);
-	const char * tmp = ssid.c_str() ;
+//	String ssid = WiFi.SSID(i);
+//	const char * tmp = ssid.c_str() ;
 //
-	strncpy(buf,tmp,32) ;
-}
+//	strncpy(buf,tmp,32) ;
+//}
 
-int channelNumber(int i) {
-	return WiFi.channel(i) ;
-}
-
-int signalStrength (int i) {
-	return WiFi.RSSI(i) ;
-}
+//int channelNumber(int i) {
+//	return WiFi.channel(i) ;
+//}
+//
+//int signalStrength (int i) {
+//	return WiFi.RSSI(i) ;
+//}
 
 // The loop function is called in an endless loop
 void loop()
@@ -192,61 +257,61 @@ void loop()
 //	    Serial.print(VCC_ADJ*voltageCount) ;
 //	    Serial.println(" volts.") ;
 	  }
-	if (delayingIsDone(lastScanMillis, SCAN_PERIOD)) {
-	    WiFi.scanNetworks(async, showHidden) ;
-	    scanStartMillis = millis() ;
+//	if (delayingIsDone(lastScanMillis, SCAN_PERIOD)) {
+//	    WiFi.scanNetworks(async, showHidden) ;
+//	    scanStartMillis = millis() ;
 //	    Serial.print("\nScan start ...\n") ;
-	}
-
-	  int n = WiFi.scanComplete();
-	  /*
-	   *
-	   * If
-	   * n>0 or n==0 then n is the number of networks found.
-	   * n==-1 then scanning is still in progress.
-	   * n==-2 then scanning has not been triggered.
-	   *
-	   */
-	  if(n >= 0) {
-		  scanEndMillis = millis() ;
-	    Serial.printf("\n\n%2d network(s) found in %5lu. milliseconds.\n\n",
-	    		n,
-				scanEndMillis-scanStartMillis
-				);
-	    Serial.println(
-	    		"Name                             RSSI Channel Encryption       Availability") ;
-	    Serial.println(
-	    		"                                 (dBm) Number   Type") ;
-	    Serial.println(
-	    		"================================ ==== ======= ================ ============") ;
-	    for (int i = 0; i < n; i++) {
-	    	const char * encryption ;
-	    	switch (WiFi.encryptionType(i)) {
-	    	case ENC_TYPE_NONE: encryption = "None" ;
-	    	break ;
-	    	case ENC_TYPE_WEP:  encryption = "WEP" ;
-	    	break ;
-	    	case ENC_TYPE_TKIP: encryption = "WPA  / PSK" ;
-	    	break ;
-	    	case ENC_TYPE_CCMP: encryption = "WPA2 / PSK" ;
-	    	break ;
-	    	case ENC_TYPE_AUTO: encryption = "WPA2 / PSK / WPA" ;
-	    	break ;
-	    	default: encryption = "unknown" ;
-	    	}
-	    	char ssidBuffer[32] ;
-	    	ssidAsCString(i,ssidBuffer) ;
-	      Serial.printf("%-32s %4d %4d    %-16s %-s\n",
+//	}
+//
+//	  int n = WiFi.scanComplete();
+//	  /*
+//	   *
+//	   * If
+//	   * n>0 or n==0 then n is the number of networks found.
+//	   * n==-1 then scanning is still in progress.
+//	   * n==-2 then scanning has not been triggered.
+//	   *
+//	   */
+//	  if(n >= 0) {
+//		  scanEndMillis = millis() ;
+//	    Serial.printf("\n\n%2d network(s) found in %5lu. milliseconds.\n\n",
+//	    		n,
+//				scanEndMillis-scanStartMillis
+//				);
+//	    Serial.println(
+//	    		"Name                             RSSI Channel Encryption       Availability") ;
+//	    Serial.println(
+//	    		"                                 (dBm) Number   Type") ;
+//	    Serial.println(
+//	    		"================================ ==== ======= ================ ============") ;
+//	    for (int i = 0; i < n; i++) {
+//	    	const char * encryption ;
+//	    	switch (WiFi.encryptionType(i)) {
+//	    	case ENC_TYPE_NONE: encryption = "None" ;
+//	    	break ;
+//	    	case ENC_TYPE_WEP:  encryption = "WEP" ;
+//	    	break ;
+//	    	case ENC_TYPE_TKIP: encryption = "WPA  / PSK" ;
+//	    	break ;
+//	    	case ENC_TYPE_CCMP: encryption = "WPA2 / PSK" ;
+//	    	break ;
+//	    	case ENC_TYPE_AUTO: encryption = "WPA2 / PSK / WPA" ;
+//	    	break ;
+//	    	default: encryption = "unknown" ;
+//	    	}
+//	    	char ssidBuffer[32] ;
+//	    	ssidAsCString(i,ssidBuffer) ;
+//	      Serial.printf("%-32s %4d %4d    %-16s %-s\n",
 //	    		  i+1,
 //	    		  ssidAsCString(i),
 //				  WiFi.SSID(i).c_str(),
-				  ssidBuffer,
-				  signalStrength(i),
-	    		  channelNumber(i),
-				  encryption,
-				  WiFi.isHidden(i)?"Hidden":""
-				  ) ;
-	    }
-	    WiFi.scanDelete();
-	  }
+//				  ssidBuffer,
+//				  signalStrength(i),
+//	    		  channelNumber(i),
+//				  encryption,
+//				  WiFi.isHidden(i)?"Hidden":""
+//				  ) ;
+//	    }
+//	    WiFi.scanDelete();
+//	  }
 }
