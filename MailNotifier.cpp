@@ -98,10 +98,10 @@ boolean success ;
 int     status  ;
 
 // constants won't change:
-const char* ssid =     "********" ;
-const char* password = "********" ;
+const char* ssid     = "*" ; // Replace * by the name (SSID) for your network.
+const char* password = "*" ; // Replace * by the password    for your network.
 const int bssid = 0 ;
-const int channel = 0 ;
+const byte channel[] = {0} ;
 const boolean establishConnection = true ;
 
 IPAddress localIp( 192, 168,   1,  60) ;
@@ -125,6 +125,61 @@ boolean delayingIsDone(unsigned long &since, unsigned long time) {
   }
   return false;
 }
+
+void simpleEncrypt(const char *text) {
+	char * textPointer = (char *)text ;
+	Serial.print("Input:  ") ;
+	Serial.print(textPointer) ;
+	Serial.print(" ") ;
+	for (char * i = (char *)text ; *i != 0 ; i++) {
+		Serial.printf(" %#2.2hhX", *i) ;
+	}
+	Serial.println() ;
+	byte index = 0 ;
+	while(*textPointer) {
+		*textPointer = 0x7F & (*textPointer + (3 & index++)) ;
+		textPointer++ ;
+	}
+
+	Serial.print("Output: ") ;
+	Serial.print(text) ;
+	Serial.print(" {") ;
+	char separator = ' ' ;
+	for (char *i = (char *)text ; *i != 0 ; i++) {
+		Serial.print(separator) ;
+		Serial.printf(" %#2.2hhX", *i) ;
+		separator = ',' ;
+	}
+	Serial.println("}") ;
+	Serial.println() ;
+}
+
+
+void simpleDecrypt(const char *text) {
+	char * textPointer = (char *)text ;
+	Serial.print("Input:  ") ;
+	Serial.print(textPointer) ;
+	Serial.print(" ") ;
+	for (char *i = (char *)text ; *i != 0 ; i++) {
+		Serial.printf(" %#2.2hhX", *i++) ;
+	}
+	Serial.println() ;
+	byte index = 0 ;
+	while(*textPointer) {
+		*textPointer = 0x7F & (*textPointer - (3 & index++)) ;
+		textPointer++ ;
+	}
+
+	Serial.print("Output: ") ;
+	Serial.print(text) ;
+	Serial.print(" ") ;
+	for (char *i = (char *)text ; *i != 0 ; i++) {
+		Serial.printf(" %#2.2hhX", *i++) ;
+	}
+	Serial.println() ;
+	Serial.println() ;
+}
+
 void setup()
 {
 	  // Serial
@@ -144,6 +199,17 @@ void setup()
 	  Serial.print(" at ") ;
 	  Serial.print(__TIME__) ;
 	  Serial.println(" local time.") ;
+
+	  //
+	  // Read the private strings
+	  //
+#include "SSID.private"
+	  simpleDecrypt(ssid) ;
+	  simpleDecrypt(password) ;
+	  while(true) yield() ;
+	  //
+	  // End of "Read the private strings"
+	  //
 
 	  // set the digital pin as output:
 	  pinMode(ledPin, OUTPUT);

@@ -487,7 +487,7 @@ environment/project/io.sloeber.core.toolChain.release.1014470780/A.UPLOAD.RESETM
 environment/project/io.sloeber.core.toolChain.release.1014470780/A.UPLOAD.RESETMETHOD/value=--before default_reset --after hard_reset
 environment/project/io.sloeber.core.toolChain.release.1014470780/A.UPLOAD.SPEED/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1014470780/A.UPLOAD.SPEED/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1014470780/A.UPLOAD.SPEED/value=57600
+environment/project/io.sloeber.core.toolChain.release.1014470780/A.UPLOAD.SPEED/value=115200
 environment/project/io.sloeber.core.toolChain.release.1014470780/A.UPLOAD.TOOL/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1014470780/A.UPLOAD.TOOL/operation=replace
 environment/project/io.sloeber.core.toolChain.release.1014470780/A.UPLOAD.TOOL/value=esptool
@@ -514,10 +514,10 @@ environment/project/io.sloeber.core.toolChain.release.1014470780/JANTJE.BOARD_NA
 environment/project/io.sloeber.core.toolChain.release.1014470780/JANTJE.BOARD_NAME/value=LOLIN(WEMOS) D1 mini Pro
 environment/project/io.sloeber.core.toolChain.release.1014470780/JANTJE.COM_PORT/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1014470780/JANTJE.COM_PORT/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1014470780/JANTJE.COM_PORT/value=/dev/ttyUSB0
+environment/project/io.sloeber.core.toolChain.release.1014470780/JANTJE.COM_PORT/value=/dev/ttyUSB1
 environment/project/io.sloeber.core.toolChain.release.1014470780/JANTJE.ECLIPSE_LOCATION/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1014470780/JANTJE.ECLIPSE_LOCATION/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1014470780/JANTJE.ECLIPSE_LOCATION/value=${eclipse_home}////////////////////////////////////////////////////////
+environment/project/io.sloeber.core.toolChain.release.1014470780/JANTJE.ECLIPSE_LOCATION/value=${eclipse_home}////////////////////////////////////////////////////////////////////////////
 environment/project/io.sloeber.core.toolChain.release.1014470780/JANTJE.EXTRA.ALL/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1014470780/JANTJE.EXTRA.ALL/operation=replace
 environment/project/io.sloeber.core.toolChain.release.1014470780/JANTJE.EXTRA.ALL/value=
@@ -541,7 +541,7 @@ environment/project/io.sloeber.core.toolChain.release.1014470780/JANTJE.EXTRA.LI
 environment/project/io.sloeber.core.toolChain.release.1014470780/JANTJE.EXTRA.LINK/value=
 environment/project/io.sloeber.core.toolChain.release.1014470780/JANTJE.MENU/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1014470780/JANTJE.MENU/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1014470780/JANTJE.MENU/value=baud\=57600\ndbg\=Disabled\neesz\=16M14M\nexception\=enabled\nip\=hb2f\nlvl\=None____\nssl\=all\nvt\=flash\nwipe\=none\nxtal\=80
+environment/project/io.sloeber.core.toolChain.release.1014470780/JANTJE.MENU/value=baud\=115200\ndbg\=Disabled\neesz\=16M14M\nexception\=enabled\nip\=hb2f\nlvl\=None____\nssl\=all\nvt\=flash\nwipe\=none\nxtal\=80
 environment/project/io.sloeber.core.toolChain.release.1014470780/JANTJE.OBJCOPY/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1014470780/JANTJE.OBJCOPY/operation=replace
 environment/project/io.sloeber.core.toolChain.release.1014470780/JANTJE.OBJCOPY/value=${A.RECIPE.OBJCOPY.HEX.1.PATTERN}\n\t${A.RECIPE.OBJCOPY.HEX.2.PATTERN}\n\t${A.RECIPE.OBJCOPY.HEX.3.PATTERN}\n\t${A.RECIPE.OBJCOPY.HEX.PATTERN}
