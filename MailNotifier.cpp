@@ -157,52 +157,52 @@ void simpleEncrypt(const char *text) {
 
 void simpleDecrypt(const char *text) {
 	char * textPointer = (char *)text ;
-	Serial.print("Input:  ") ;
-	Serial.print(textPointer) ;
-	Serial.print(" ") ;
-	for (char *i = (char *)text ; *i != 0 ; i++) {
-		Serial.printf(" %#2.2hhX", *i++) ;
-	}
-	Serial.println() ;
+//	Serial.print("Input:  ") ;
+//	Serial.print(textPointer) ;
+//	Serial.print(" ") ;
+//	for (char *i = (char *)text ; *i != 0 ; i++) {
+//		Serial.printf(" %#2.2hhX", *i++) ;
+//	}
+//	Serial.println() ;
 	byte index = 0 ;
 	while(*textPointer) {
 		*textPointer = 0x7F & (*textPointer - (3 & index++)) ;
 		textPointer++ ;
 	}
 
-	Serial.print("Output: ") ;
-	Serial.print(text) ;
-	Serial.print(" ") ;
-	for (char *i = (char *)text ; *i != 0 ; i++) {
-		Serial.printf(" %#2.2hhX", *i++) ;
-	}
-	Serial.println() ;
-	Serial.println() ;
+//	Serial.print("Output: ") ;
+//	Serial.print(text) ;
+//	Serial.print(" ") ;
+//	for (char *i = (char *)text ; *i != 0 ; i++) {
+//		Serial.printf(" %#2.2hhX", *i++) ;
+//	}
+//	Serial.println() ;
+//	Serial.println() ;
 }
 
 void simpleErase(const char *text) {
 	char * textPointer = (char *)text ;
-	Serial.print("Input:  ") ;
-	Serial.print(textPointer) ;
-	Serial.print(" ") ;
-	for (char *i = (char *)text ; *i != 0 ; i++) {
-		Serial.printf(" %#2.2hhX", *i++) ;
-	}
-	Serial.println() ;
+//	Serial.print("Input:  ") ;
+//	Serial.print(textPointer) ;
+//	Serial.print(" ") ;
+//	for (char *i = (char *)text ; *i != 0 ; i++) {
+//		Serial.printf(" %#2.2hhX", *i++) ;
+//	}
+//	Serial.println() ;
 	byte index = 0 ;
 	while(*textPointer) {
 		*textPointer = (byte)0 ;
 		textPointer++ ;
 	}
 
-	Serial.print("Output: ") ;
-	Serial.print(text) ;
-	Serial.print(" ") ;
-	for (char *i = (char *)text ; *i != 0 ; i++) {
-		Serial.printf(" %#2.2hhX", *i++) ;
-	}
-	Serial.println() ;
-	Serial.println() ;
+//	Serial.print("Output: ") ;
+//	Serial.print(text) ;
+//	Serial.print(" ") ;
+//	for (char *i = (char *)text ; *i != 0 ; i++) {
+//		Serial.printf(" %#2.2hhX", *i++) ;
+//	}
+//	Serial.println() ;
+//	Serial.println() ;
 }
 
 void setup()
