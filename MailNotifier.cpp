@@ -180,6 +180,31 @@ void simpleDecrypt(const char *text) {
 	Serial.println() ;
 }
 
+void simpleErase(const char *text) {
+	char * textPointer = (char *)text ;
+	Serial.print("Input:  ") ;
+	Serial.print(textPointer) ;
+	Serial.print(" ") ;
+	for (char *i = (char *)text ; *i != 0 ; i++) {
+		Serial.printf(" %#2.2hhX", *i++) ;
+	}
+	Serial.println() ;
+	byte index = 0 ;
+	while(*textPointer) {
+		*textPointer = (byte)0 ;
+		textPointer++ ;
+	}
+
+	Serial.print("Output: ") ;
+	Serial.print(text) ;
+	Serial.print(" ") ;
+	for (char *i = (char *)text ; *i != 0 ; i++) {
+		Serial.printf(" %#2.2hhX", *i++) ;
+	}
+	Serial.println() ;
+	Serial.println() ;
+}
+
 void setup()
 {
 	  // Serial
@@ -206,6 +231,8 @@ void setup()
 #include "SSID.private"
 	  simpleDecrypt(ssid) ;
 	  simpleDecrypt(password) ;
+	  simpleErase(ssid) ;
+	  simpleErase(password) ;
 	  while(true) yield() ;
 	  //
 	  // End of "Read the private strings"
