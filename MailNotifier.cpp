@@ -3,6 +3,11 @@
 
 #include "ESP8266WiFi.h"
 
+// Uncomment exactly one of these lines:
+
+#define Home
+// #define Aiden
+
 /*
  * Want to access
  *
@@ -104,11 +109,24 @@ const int bssid = 0 ;
 const byte channel[] = {0} ;
 const boolean establishConnection = true ;
 
+#if defined Home
+
 IPAddress localIp( 192, 168,   1,  60) ;
 IPAddress gateway( 192, 168,   1, 254) ;
 IPAddress subnet ( 255, 255, 255,   0) ;
 IPAddress dns1   (  68,  94, 156,   9) ;
 IPAddress dns2   (  68,  94, 157,   9) ;
+
+#elif defined Aiden
+
+IPAddress localIp( 192, 168,   1,  60) ;
+IPAddress gateway( 192, 168,   0,   1) ;
+IPAddress subnet ( 255, 255, 255,   0) ;
+IPAddress dns1   ( 192, 168,   0, 100) ;
+IPAddress dns2   ( 192, 168,   0, 100) ;
+
+#endif
+
 
 const unsigned long interval    =  250 ;// LED blink interval (milliseconds).
 const unsigned long SCAN_PERIOD = 5000 ;// Wifi scan interval (milliseconds).
@@ -189,7 +207,6 @@ void simpleErase(const char *text) {
 //		Serial.printf(" %#2.2hhX", *i++) ;
 //	}
 //	Serial.println() ;
-	byte index = 0 ;
 	while(*textPointer) {
 		*textPointer = (byte)0 ;
 		textPointer++ ;
@@ -233,7 +250,6 @@ void setup()
 	  simpleDecrypt(password) ;
 	  simpleErase(ssid) ;
 	  simpleErase(password) ;
-	  while(true) yield() ;
 	  //
 	  // End of "Read the private strings"
 	  //
@@ -260,39 +276,35 @@ void setup()
 	  WiFi.begin(ssid, password, bssid, channel, establishConnection) ;
 	  status = WiFi.status() ;
 	  switch (status) {
-	  WL_CONNECTED:
-	  Serial.println
-	  ("Successful connection.") ;
+	  case WL_CONNECTED:
+		  Serial.println("Successful connection.") ;
 	  break ;
 
-	  WL_NO_SSID_AVAIL:
-	  Serial.println
-	  ("Failed to connect because configured SSID could not be reached.") ;
+	  case WL_NO_SSID_AVAIL:
+		  Serial.println
+		  ("Failed to connect because configured SSID could not be reached.") ;
 	  break ;
 
-	  WL_CONNECT_FAILED:
-	  Serial.println
-	  ("Failed to connect because password is incorrect.") ;
+	  case WL_CONNECT_FAILED:
+		  Serial.println("Failed to connect because password is incorrect.") ;
 	  break ;
 
-	  WL_IDLE_STATUS:
-	  Serial.println
-	  ("WiFi status is changing.") ;
+	  case WL_IDLE_STATUS:
+		  Serial.println("WiFi status is changing.") ;
 	  break ;
 
-	  WL_DISCONNECTED:
-	  Serial.println
-	  ("Failed to connect because unit is not configure for station mode.") ;
+	  case WL_DISCONNECTED:
+		  Serial.println(
+			"Failed to connect because unit is not configured for station mode."
+				  ) ;
 	  break ;
 
 	  default:
-		  Serial.println
-		  ("Failed to connect due to unknown reason.") ;
-		  break ;
-
+		  Serial.println("Failed to connect due to unknown reason.") ;
 	  }
+
 	  if (status != WL_CONNECTED) {
-		  while (true) ;
+		  while (true) yield() ;
 	  }
 	  WiFi.disconnect();
 }
