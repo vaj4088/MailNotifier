@@ -222,10 +222,16 @@ void simpleErase(const char *text) {
 //	Serial.println() ;
 }
 
+void stayHere() {
+	while (true)
+		yield();
+}
+
 void setup()
 {
 	  // Serial
 	  Serial.begin(115200) ;
+
 	  unsigned long preparing ;
 	  unsigned long const waitTime  = 2000 ; // milliseconds
 
@@ -242,38 +248,55 @@ void setup()
 	  Serial.print(__TIME__) ;
 	  Serial.println(" local time.") ;
 
+	  // set the digital pin as output:
+	  pinMode(ledPin, OUTPUT);
+
 	  //
-	  // Read the private strings
+	  // Set up for station mode.
+	  //
+	  WiFi.mode(WIFI_STA);
+	  //
+	  // End of "Set up for station mode."
+	  //
+
+	  //
+	  // Configure for network.
+	  //
+	  success = WiFi.config(localIp, gateway, subnet, dns1, dns2) ;
+	  if (!success) {
+		  Serial.print("Result of configuration is ") ;
+		  Serial.print(success) ;
+		  Serial.println(".  Could not configure.") ;
+		  stayHere();
+	  }
+	  //
+	  // End of "Configure for network."
+	  //
+
+	  //
+	  // Read and decrypt the private strings.
 	  //
 #include "SSID.private"
 	  simpleDecrypt(ssid) ;
 	  simpleDecrypt(password) ;
-	  simpleErase(ssid) ;
-	  simpleErase(password) ;
 	  //
-	  // End of "Read the private strings"
+	  // End of "Read and decrypt the private strings."
 	  //
 
-	  // set the digital pin as output:
-	  pinMode(ledPin, OUTPUT);
-
-	  WiFi.mode(WIFI_STA);
-		/*
-		 * Access by a station...
-		 *
-		 * Gateway local address is 192.168.1.254
-		 * Use 192.168.1.60 for MailboxNotifier IP address.
-		 * Subnet Mask 255.255.255.0
-		 * Primary   DNS 68.94.156.9
-		 * Secondary DNS 68.94.157.9
-		 *
-		 */
-	  success = WiFi.config(localIp, gateway, subnet, dns1, dns2) ;
-	  if (!success) {
-		  Serial.println("Could not configure.") ;
-		  while (true) ;
-	  }
+	  //
+	  // Connect to network.
+	  //
 	  WiFi.begin(ssid, password, bssid, channel, establishConnection) ;
+
+		  //
+		  // Erase the private strings.
+		  //
+		  simpleErase(ssid) ;
+		  simpleErase(password) ;
+		  //
+		  // End of "Erase the private strings."
+		  //
+
 	  status = WiFi.status() ;
 	  switch (status) {
 	  case WL_CONNECTED:
@@ -304,8 +327,13 @@ void setup()
 	  }
 
 	  if (status != WL_CONNECTED) {
-		  while (true) yield() ;
+		  stayHere();
 	  }
+
+	  //
+	  // End of "Connect to network."
+	  //
+
 	  WiFi.disconnect();
 }
 
