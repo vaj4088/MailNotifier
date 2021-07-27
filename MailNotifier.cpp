@@ -119,7 +119,7 @@ IPAddress dns2   (  68,  94, 157,   9) ;
 
 #elif defined Aiden
 
-IPAddress localIp( 192, 168,   1,  60) ;
+IPAddress localIp( 192, 168,   0, 160) ;
 IPAddress gateway( 192, 168,   0,   1) ;
 IPAddress subnet ( 255, 255, 255,   0) ;
 IPAddress dns1   ( 192, 168,   0, 100) ;
@@ -334,7 +334,10 @@ void setup()
 	  // End of "Connect to network."
 	  //
 
-	  WiFi.disconnect();
+	  // TODO - Access web server (including voltage reading),
+	  //        and go into deep sleep.
+
+//	  WiFi.disconnect();
 }
 
 /*
