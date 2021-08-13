@@ -2,11 +2,11 @@
 #include "MailNotifier.h"
 
 #include "ESP8266WiFi.h"
-//
-// Uncomment exactly one of these #define lines:
-//
-#define Home
-// #define Aiden
+
+// Uncomment exactly one of these lines:
+
+// #define Home
+#define Aiden
 
 /*
  * Want to access
@@ -47,6 +47,37 @@
  *  defined in the URL of the request.
  *
  */
+
+/*
+  Blink without Delay (BWOD)
+
+  Turns on and off a light emitting diode (LED) connected to a digital pin,
+  without using the delay() function. This means that other code can run at the
+  same time without being interrupted by the LED code.
+
+  The circuit:
+  - Use the onboard LED.
+  - Note: Most Arduinos have an on-board LED you can control. On the UNO, MEGA
+    and ZERO it is attached to digital pin 13, on MKR1000 on pin 6. LED_BUILTIN
+    is set to the correct LED pin independent of which board is used.
+    If you want to know what pin the on-board LED is connected to on your
+    Arduino model, check the Technical Specs of your board at:
+    https://www.arduino.cc/en/Main/Products
+
+  created 2005
+  by David A. Mellis
+  modified 8 Feb 2010
+  by Paul Stoffregen
+  modified 11 Nov 2013
+  by Scott Fitzgerald
+  modified 9 Jan 2017
+  by Arturo Guadalupi
+
+  This example code is in the public domain.
+
+  http://www.arduino.cc/en/Tutorial/BlinkWithoutDelay
+*/
+
 //
 //
 //
@@ -55,7 +86,18 @@ ADC_MODE(ADC_VCC) ;  // Self VCC Read Mode
 // NOTE that this line (above) must be OUTSIDE of any function.
 //
 
+// constants won't change. Used here to set a pin number:
+const int ledPin =  LED_BUILTIN;// the number of the LED pin
+
 // Variables will change:
+int ledState = LOW;             // ledState used to set the LED
+
+// Generally, you should use "unsigned long" for variables that hold time
+// The value will quickly become too large for an int to store
+unsigned long previousMillis = 0 ;       // will store last time LED was updated
+unsigned long lastScanMillis = 0 ;       // will store time of last Wifi scan.
+unsigned long scanStartMillis ;  // Start time of a scan, in milliseconds.
+unsigned long scanEndMillis   ;  // End   time of a scan, in milliseconds.
 
 boolean success ;
 int     status  ;
@@ -84,6 +126,12 @@ IPAddress dns1   ( 192, 168,   0, 100) ;
 IPAddress dns2   ( 192, 168,   0, 100) ;
 
 #endif
+
+
+const unsigned long interval    =  250 ;// LED blink interval (milliseconds).
+const unsigned long SCAN_PERIOD = 5000 ;// Wifi scan interval (milliseconds).
+const boolean async = true ; // Scan in the background.
+const boolean showHidden = true ; // Scan shows hidden networks.
 
 boolean delayingIsDone(unsigned long &since, unsigned long time) {
   // return false if we're still "delaying", true if time ms has passed.
@@ -127,19 +175,51 @@ void simpleEncrypt(const char *text) {
 
 void simpleDecrypt(const char *text) {
 	char * textPointer = (char *)text ;
+//	Serial.print("Input:  ") ;
+//	Serial.print(textPointer) ;
+//	Serial.print(" ") ;
+//	for (char *i = (char *)text ; *i != 0 ; i++) {
+//		Serial.printf(" %#2.2hhX", *i++) ;
+//	}
+//	Serial.println() ;
 	byte index = 0 ;
 	while(*textPointer) {
 		*textPointer = 0x7F & (*textPointer - (3 & index++)) ;
 		textPointer++ ;
 	}
+
+//	Serial.print("Output: ") ;
+//	Serial.print(text) ;
+//	Serial.print(" ") ;
+//	for (char *i = (char *)text ; *i != 0 ; i++) {
+//		Serial.printf(" %#2.2hhX", *i++) ;
+//	}
+//	Serial.println() ;
+//	Serial.println() ;
 }
 
 void simpleErase(const char *text) {
 	char * textPointer = (char *)text ;
+//	Serial.print("Input:  ") ;
+//	Serial.print(textPointer) ;
+//	Serial.print(" ") ;
+//	for (char *i = (char *)text ; *i != 0 ; i++) {
+//		Serial.printf(" %#2.2hhX", *i++) ;
+//	}
+//	Serial.println() ;
 	while(*textPointer) {
 		*textPointer = (byte)0 ;
 		textPointer++ ;
 	}
+
+//	Serial.print("Output: ") ;
+//	Serial.print(text) ;
+//	Serial.print(" ") ;
+//	for (char *i = (char *)text ; *i != 0 ; i++) {
+//		Serial.printf(" %#2.2hhX", *i++) ;
+//	}
+//	Serial.println() ;
+//	Serial.println() ;
 }
 
 void stayHere() {
@@ -167,6 +247,9 @@ void setup()
 	  Serial.print(" at ") ;
 	  Serial.print(__TIME__) ;
 	  Serial.println(" local time.") ;
+
+	  // set the digital pin as output:
+	  pinMode(ledPin, OUTPUT);
 
 	  //
 	  // Set up for station mode.
@@ -314,6 +397,33 @@ void setup()
 //
 //	   }
 //	 }
+//
+//	 void printWifiStatus() {
+//
+//	   // print the SSID of the network you're attached to:
+//
+//	   Serial.print("SSID: ");
+//
+//	   Serial.println(WiFi.SSID());
+//
+//	   // print your WiFi shield's IP address:
+//
+//	   IPAddress ip = WiFi.localIP();
+//
+//	   Serial.print("IP Address: ");
+//
+//	   Serial.println(ip);
+//
+//	   // print the received signal strength:
+//
+//	   long rssi = WiFi.RSSI();
+//
+//	   Serial.print("signal strength (RSSI):");
+//
+//	   Serial.print(rssi);
+//
+//	   Serial.println(" dBm");
+//	 }
 
 	  //	  Echo Server outputs "None":
 	  //	  http://urlecho.appspot.com/echo
@@ -325,9 +435,117 @@ void setup()
 //	  mode is one of WAKE_RF_DEFAULT, WAKE_RFCAL, WAKE_NO_RFCAL,
 //	  WAKE_RF_DISABLED.
 
+	  //	  WiFi.disconnect();
 }
+
+/*
+ * These functions are used for isolating Eclipse errors into a single place.
+ * These Eclipse errors are not real errors.
+ */
+
+//void ssidAsCString(int i, char buf[32]) {
+//
+//	The following two lines should not be collapsed into one line until
+//	there is an update in Sloeber from Beryllium to another version of Eclipse
+//	that better handles these functions.
+//
+//	String ssid = WiFi.SSID(i);
+//	const char * tmp = ssid.c_str() ;
+//
+//	strncpy(buf,tmp,32) ;
+//}
+
+//int channelNumber(int i) {
+//	return WiFi.channel(i) ;
+//}
+//
+//int signalStrength (int i) {
+//	return WiFi.RSSI(i) ;
+//}
 
 // The loop function is called in an endless loop
 void loop()
 {
+	  // here is where you'd put code that needs to be running all the time.
+
+	  // check to see if it's time to blink the LED; that is, if the difference
+	  // between the current time and last time you blinked the LED is bigger than
+	  // the interval at which you want to blink the LED.
+	if (delayingIsDone(previousMillis, interval)) {
+	    // if the LED is off turn it on and vice-versa:
+		ledState = ledState==LOW?HIGH:LOW ;
+
+//		const float VCC_ADJ = 1.096/1000.0 * (3.27/3.24)  ;
+//		const float VCC_ADJ = 0.001106148148148  ;
+//		int voltageCount = ESP.getVcc() ;
+
+	    digitalWrite(ledPin, ledState);
+
+//	    Serial.print("Pin ") ;
+//	    Serial.print(ledPin) ;
+//	    Serial.print(" has been set to ") ;
+//	    Serial.print(ledState==LOW?" LOW.":"HIGH.") ;
+//	    Serial.print("  Voltage reading is ") ;
+//	    Serial.print(voltageCount) ;
+//	    Serial.print(" which may be ") ;
+//	    Serial.print(VCC_ADJ*voltageCount) ;
+//	    Serial.println(" volts.") ;
+	  }
+//	if (delayingIsDone(lastScanMillis, SCAN_PERIOD)) {
+//	    WiFi.scanNetworks(async, showHidden) ;
+//	    scanStartMillis = millis() ;
+//	    Serial.print("\nScan start ...\n") ;
+//	}
+//
+//	  int n = WiFi.scanComplete();
+//	  /*
+//	   *
+//	   * If
+//	   * n>0 or n==0 then n is the number of networks found.
+//	   * n==-1 then scanning is still in progress.
+//	   * n==-2 then scanning has not been triggered.
+//	   *
+//	   */
+//	  if(n >= 0) {
+//		  scanEndMillis = millis() ;
+//	    Serial.printf("\n\n%2d network(s) found in %5lu. milliseconds.\n\n",
+//	    		n,
+//				scanEndMillis-scanStartMillis
+//				);
+//	    Serial.println(
+//	    		"Name                             RSSI Channel Encryption       Availability") ;
+//	    Serial.println(
+//	    		"                                 (dBm) Number   Type") ;
+//	    Serial.println(
+//	    		"================================ ==== ======= ================ ============") ;
+//	    for (int i = 0; i < n; i++) {
+//	    	const char * encryption ;
+//	    	switch (WiFi.encryptionType(i)) {
+//	    	case ENC_TYPE_NONE: encryption = "None" ;
+//	    	break ;
+//	    	case ENC_TYPE_WEP:  encryption = "WEP" ;
+//	    	break ;
+//	    	case ENC_TYPE_TKIP: encryption = "WPA  / PSK" ;
+//	    	break ;
+//	    	case ENC_TYPE_CCMP: encryption = "WPA2 / PSK" ;
+//	    	break ;
+//	    	case ENC_TYPE_AUTO: encryption = "WPA2 / PSK / WPA" ;
+//	    	break ;
+//	    	default: encryption = "unknown" ;
+//	    	}
+//	    	char ssidBuffer[32] ;
+//	    	ssidAsCString(i,ssidBuffer) ;
+//	      Serial.printf("%-32s %4d %4d    %-16s %-s\n",
+//	    		  i+1,
+//	    		  ssidAsCString(i),
+//				  WiFi.SSID(i).c_str(),
+//				  ssidBuffer,
+//				  signalStrength(i),
+//	    		  channelNumber(i),
+//				  encryption,
+//				  WiFi.isHidden(i)?"Hidden":""
+//				  ) ;
+//	    }
+//	    WiFi.scanDelete();
+//	  }
 }
