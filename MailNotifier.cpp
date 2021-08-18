@@ -147,113 +147,138 @@ void stayHere() {
 		yield();
 }
 
+void ConnectStationToNetwork(
+		const char* encryptedNetworkName,
+		const char* encryptedNetworkPassword
+		) {
+	char * writeableNetworkName     = (char *) encryptedNetworkName     ;
+	char * writeableNetworkPassword = (char *) encryptedNetworkPassword ;
+	//
+	// Set up for station mode.
+	//
+	WiFi.mode(WIFI_STA);
+	//
+	// End of "Set up for station mode."
+	//
+
+	//
+	// Configure for network.
+	//
+	success = WiFi.config(localIp, gateway, subnet, dns1, dns2);
+	if (!success) {
+		Serial.println("Could not configure.");
+		stayHere();
+	}
+
+	//
+	// Decrypt the private strings.
+	//
+	simpleDecrypt(writeableNetworkName    );
+	simpleDecrypt(writeableNetworkPassword);
+	//
+	// End of "Read and decrypt the private strings."
+	//
+
+	//
+	// End of "Configure for network."
+	//
+
+
+	//
+	// Connect to network.
+	//
+	WiFi.begin(
+			writeableNetworkName,
+			writeableNetworkPassword,
+			bssid,
+			channel,
+			establishConnection
+			);
+	//
+	// Erase the private strings.
+	//
+	simpleErase(writeableNetworkName    );
+	simpleErase(writeableNetworkPassword);
+	//
+	// End of "Erase the private strings."
+	//
+
+	status = WiFi.status();
+	switch (status) {
+	case WL_CONNECTED:
+		Serial.println("Successful connection.");
+		break;
+	case WL_NO_SSID_AVAIL:
+		Serial.print("Failed to connect because ") ;
+		Serial.println("configured SSID could not be reached.");
+		break;
+	case WL_CONNECT_FAILED:
+		Serial.println("Failed to connect because password is incorrect.");
+		break;
+	case WL_IDLE_STATUS:
+		Serial.println("WiFi status is changing.");
+		break;
+	case WL_DISCONNECTED:
+		Serial.print("Failed to connect because ") ;
+		Serial.println("unit is not configured for station mode.");
+		break;
+	default:
+		Serial.println("Failed to connect due to unknown reason.");
+	}
+	if (status != WL_CONNECTED) {
+		stayHere();
+	}
+}
+
 void setup()
 {
-	  // Serial
-	  Serial.begin(115200) ;
+	// Serial
+	Serial.begin(115200);
 
-	  unsigned long preparing ;
-	  unsigned long const waitTime  = 2000 ; // milliseconds
+	unsigned long preparing;
+	unsigned long const waitTime = 2000; // milliseconds
 
-	  preparing = millis() ;
-	  while (!delayingIsDone(preparing, waitTime)) {}
+	preparing = millis();
+	while (!delayingIsDone(preparing, waitTime)) {
+	}
 
-	  Serial.println("Serial has been set up.") ;
-	  //
-	  // Version information.
-	  //
-	  Serial.print("Compiled on ") ;
-	  Serial.print(__DATE__) ;
-	  Serial.print(" at ") ;
-	  Serial.print(__TIME__) ;
-	  Serial.println(" local time.") ;
+	Serial.println("Serial has been set up.");
+	//
+	// Version information.
+	//
+	Serial.print("Compiled on ");
+	Serial.print(__DATE__);
+	Serial.print(" at ");
+	Serial.print(__TIME__);
+	Serial.println(" local time.");
 
-	  //
-	  // Set up for station mode.
-	  //
-	  WiFi.mode(WIFI_STA);
-	  //
-	  // End of "Set up for station mode."
-	  //
+	//
+	// Make unit a station, and connect to network.
+	//
 
-	  //
-	  // Configure for network.
-	  //
-	  success = WiFi.config(localIp, gateway, subnet, dns1, dns2) ;
-	  if (!success) {
-		  Serial.print("Result of configuration is ") ;
-		  Serial.print(success) ;
-		  Serial.println(".  Could not configure.") ;
-		  stayHere();
-	  }
-	  //
-	  // End of "Configure for network."
-	  //
-
-	  //
-	  // Read and decrypt the private strings.
-	  //
+	//
+	// Get the private encrypted strings.
+	//
 #include "SSID.private"
-	  simpleDecrypt(ssid) ;
-	  simpleDecrypt(password) ;
-	  //
-	  // End of "Read and decrypt the private strings."
-	  //
+	//
+	// End of "Get the private encrypted strings.".
+	//
 
-	  //
-	  // Connect to network.
-	  //
-	  WiFi.begin(ssid, password, bssid, channel, establishConnection) ;
+	ConnectStationToNetwork(ssid, password);
+	//
+	// End of "Make unit a station, and connect to network.".
+	//
 
-		  //
-		  // Erase the private strings.
-		  //
-		  simpleErase(ssid) ;
-		  simpleErase(password) ;
-		  //
-		  // End of "Erase the private strings."
-		  //
+	//
+	// Erase the private encrypted strings.
+	//
+	simpleErase(ssid);
+	simpleErase(password);
+	//
+	// End of "Erase the private encrypted strings."
+	//
 
-	  status = WiFi.status() ;
-	  switch (status) {
-	  case WL_CONNECTED:
-		  Serial.println("Successful connection.") ;
-	  break ;
-
-	  case WL_NO_SSID_AVAIL:
-		  Serial.println
-		  ("Failed to connect because configured SSID could not be reached.") ;
-	  break ;
-
-	  case WL_CONNECT_FAILED:
-		  Serial.println("Failed to connect because password is incorrect.") ;
-	  break ;
-
-	  case WL_IDLE_STATUS:
-		  Serial.println("WiFi status is changing.") ;
-	  break ;
-
-	  case WL_DISCONNECTED:
-		  Serial.println(
-			"Failed to connect because unit is not configured for station mode."
-				  ) ;
-	  break ;
-
-	  default:
-		  Serial.println("Failed to connect due to unknown reason.") ;
-	  }
-
-	  if (status != WL_CONNECTED) {
-		  stayHere();
-	  }
-
-	  //
-	  // End of "Connect to network."
-	  //
-
-	  // TODO - Access web server (including voltage reading).
-
-
+	// TODO - Access web server (including voltage reading).
 
 //	  char server[] = "www.google.com";    // name address for Google (using DNS)
 //
@@ -315,10 +340,10 @@ void setup()
 //	   }
 //	 }
 
-	  //	  Echo Server outputs "None":
-	  //	  http://urlecho.appspot.com/echo
+	//	  Echo Server outputs "None":
+	//	  http://urlecho.appspot.com/echo
 
-	  // TODO - Go into deep sleep.
+	// TODO - Go into deep sleep.
 
 //	  ESP.deepSleepInstant(microseconds, mode) will put the chip into deep sleep
 //	  but sleeps instantly without waiting for WiFi to shutdown.
