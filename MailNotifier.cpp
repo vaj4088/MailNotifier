@@ -168,6 +168,8 @@ void setup()
 			 ) ;
 
 	 #endif
+	  }
+
 
 	// TODO - Access web server (including voltage reading).
 
@@ -378,6 +380,13 @@ void httpGet(const char * server, const char * request="/", int port=80) {
 
 	    client.print("Host: ") ;
 	    client.println(server) ;
+
+	    // if there are incoming bytes available
+	    // from the server, read them and print them:
+	    while (client.available()) {
+	    	char c = client.read();
+	    	Serial.write(c);
+	    }
 
 	    client.println("Connection: close");
 	    client.println();
