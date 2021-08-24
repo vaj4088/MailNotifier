@@ -8,6 +8,12 @@
 #define Home
 // #define Aiden
 
+//
+// Uncomment exactly one of these #define lines:
+//
+#define debug
+// #define noDebug
+
 /*
  * Want to access
  *
@@ -84,6 +90,132 @@ IPAddress dns1   ( 192, 168,   0, 100) ;
 IPAddress dns2   ( 192, 168,   0, 100) ;
 
 #endif
+
+void setup()
+{
+	// Serial
+	Serial.begin(115200);
+
+	unsigned long preparing;
+	unsigned long const waitTime = 2000; // milliseconds
+
+	preparing = millis();
+	while (!delayingIsDone(preparing, waitTime)) {
+	}
+
+	Serial.println("Serial has been set up.");
+	//
+	// Version information.
+	//
+	Serial.print("Compiled on ");
+	Serial.print(__DATE__);
+	Serial.print(" at ");
+	Serial.print(__TIME__);
+	Serial.println(" local time.");
+
+	//
+	// Make unit a station, and connect to network.
+	//
+
+	//
+	// Get the private encrypted strings.
+	//
+#include "SSID.private"
+	//
+	// End of "Get the private encrypted strings.".
+	//
+
+	ConnectStationToNetwork(ssid, password);
+	//
+	// End of "Make unit a station, and connect to network.".
+	//
+
+	//
+	// Erase the private encrypted strings.
+	//
+	simpleErase(ssid);
+	simpleErase(password);
+	//
+	// End of "Erase the private encrypted strings."
+	//
+
+	/*
+	 * Want to access
+	 *
+	 * https://maker.ifttt.com/trigger/{event}/with/key/bBzMt3GMKR46GbTLP6v919
+	 *
+	 * to trigger ifttt.com to send a text to Ronni.
+	 *
+	 * {event} is Mail_Notifier
+	 *
+	 * so use
+	 *
+	 * https://maker.ifttt.com/trigger/Mail_Notifier/with/key/bBzMt3GMKR46GbTLP6v919
+	 *
+	 */
+
+	#if defined debug
+
+	 httpGet("45.17.221.124", "/", 21280) ;
+
+	// http://45.17.221.124:21280/
+
+    #elif defined noDebug
+
+	 httpGet(
+			 "maker.ifttt.com",
+			 makerRequest
+			 ) ;
+
+	 #endif
+
+	// TODO - Access web server (including voltage reading).
+
+//	 void loop() {
+//
+//	   // if there are incoming bytes available
+//
+//	   // from the server, read them and print them:
+//
+//	   while (client.available()) {
+//
+//	     char c = client.read();
+//
+//	     Serial.write(c);
+//
+//	   }
+//
+//	   // if the server's disconnected, stop the client:
+//
+//	   if (!client.connected()) {
+//
+//	     Serial.println();
+//
+//	     Serial.println("disconnecting from server.");
+//
+//	     client.stop();
+//
+//	     // do nothing forevermore:
+//
+//	     while (true);
+//
+//	   }
+//	 }
+
+	//	  Echo Server outputs "None":
+	//	  http://urlecho.appspot.com/echo
+
+	// TODO - Go into deep sleep.
+
+//	  ESP.deepSleepInstant(microseconds, mode) will put the chip into deep sleep
+//	  but sleeps instantly without waiting for WiFi to shutdown.
+//	  mode is one of WAKE_RF_DEFAULT, WAKE_RFCAL, WAKE_NO_RFCAL,
+//	  WAKE_RF_DISABLED.
+
+}
+
+// The loop function is called in an endless loop
+void loop() {}
 
 boolean delayingIsDone(unsigned long &since, unsigned long time) {
   // return false if we're still "delaying", true if time ms has passed.
@@ -230,129 +362,33 @@ void ConnectStationToNetwork(
 	}
 }
 
-void setup()
-{
-	// Serial
-	Serial.begin(115200);
-
-	unsigned long preparing;
-	unsigned long const waitTime = 2000; // milliseconds
-
-	preparing = millis();
-	while (!delayingIsDone(preparing, waitTime)) {
-	}
-
-	Serial.println("Serial has been set up.");
+void httpGet(const char * server, const char * request="/", int port=80) {
 	//
-	// Version information.
+	// Default port of 80 is used for web access.
 	//
-	Serial.print("Compiled on ");
-	Serial.print(__DATE__);
-	Serial.print(" at ");
-	Serial.print(__TIME__);
-	Serial.println(" local time.");
+	WiFiClient client ;
 
-	//
-	// Make unit a station, and connect to network.
-	//
+	  if (client.connect(server, port)) {
+	    Serial.println("Connected to server");
 
-	//
-	// Get the private encrypted strings.
-	//
-#include "SSID.private"
-	//
-	// End of "Get the private encrypted strings.".
-	//
+	    // Make a HTTP request:
+	    client.print("GET ") ;
+	    client.print(request) ;
+	    client.println(" HTTP/1.1") ;
 
-	ConnectStationToNetwork(ssid, password);
-	//
-	// End of "Make unit a station, and connect to network.".
-	//
+	    client.print("Host: ") ;
+	    client.println(server) ;
 
-	//
-	// Erase the private encrypted strings.
-	//
-	simpleErase(ssid);
-	simpleErase(password);
-	//
-	// End of "Erase the private encrypted strings."
-	//
+	    client.println("Connection: close");
+	    client.println();
 
-	// TODO - Access web server (including voltage reading).
+	  } else {
 
-//	  char server[] = "www.google.com";    // name address for Google (using DNS)
-//
-//	  // Initialize the Ethernet client library
-//	  // with the IP address and port of the server
-//	  // that you want to connect to (port 80 is default for HTTP):
-//
-//	  WiFiClient client;
+		  Serial.print("Could not connect to server ") ;
+		  Serial.print(server) ;
+		  Serial.println(" .") ;
+		  stayHere() ;
 
-//	  Serial.println("\nStarting connection to server...");
-//
-//	   // if you get a connection, report back via serial:
-//
-//	   if (client.connect(server, 80)) {
-//
-//	     Serial.println("connected to server");
-//
-//	     // Make a HTTP request:
-//
-//	     client.println("GET /search?q=arduino HTTP/1.1");
-//
-//	     client.println("Host: www.google.com");
-//
-//	     client.println("Connection: close");
-//
-//	     client.println();
-//
-//	   }
-//	 }
-//
-//	 void loop() {
-//
-//	   // if there are incoming bytes available
-//
-//	   // from the server, read them and print them:
-//
-//	   while (client.available()) {
-//
-//	     char c = client.read();
-//
-//	     Serial.write(c);
-//
-//	   }
-//
-//	   // if the server's disconnected, stop the client:
-//
-//	   if (!client.connected()) {
-//
-//	     Serial.println();
-//
-//	     Serial.println("disconnecting from server.");
-//
-//	     client.stop();
-//
-//	     // do nothing forevermore:
-//
-//	     while (true);
-//
-//	   }
-//	 }
-
-	//	  Echo Server outputs "None":
-	//	  http://urlecho.appspot.com/echo
-
-	// TODO - Go into deep sleep.
-
-//	  ESP.deepSleepInstant(microseconds, mode) will put the chip into deep sleep
-//	  but sleeps instantly without waiting for WiFi to shutdown.
-//	  mode is one of WAKE_RF_DEFAULT, WAKE_RFCAL, WAKE_NO_RFCAL,
-//	  WAKE_RF_DISABLED.
-
+	  }
 }
 
-// The loop function is called in an endless loop
-void loop()
-{
-}
