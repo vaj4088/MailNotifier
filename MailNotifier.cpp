@@ -69,6 +69,11 @@ int     status  ;
 // constants won't change:
 const char* ssid     = "*" ; // Replace * by the name (SSID) for your network.
 const char* password = "*" ; // Replace * by the password    for your network.
+//
+// Defined in SSID.private
+//
+// const char* makerRequest = "..." ;
+//
 const int bssid = 0 ;
 const byte channel[] = {0} ;
 const boolean establishConnection = true ;
@@ -156,13 +161,13 @@ void setup()
 
 	#if defined debug
 
-	 httpGet("45.17.221.124", "/", 21280) ;
+	 WiFiClient wfc = httpGet("45.17.221.124", "/", 21280) ;
 
 	// http://45.17.221.124:21280/
 
     #elif defined noDebug
 
-	 httpGet(
+	 WiFiClient wfc = httpGet(
 			 "maker.ifttt.com",
 			 makerRequest
 			 ) ;
@@ -213,8 +218,8 @@ void setup()
 //	  but sleeps instantly without waiting for WiFi to shutdown.
 //	  mode is one of WAKE_RF_DEFAULT, WAKE_RFCAL, WAKE_NO_RFCAL,
 //	  WAKE_RF_DISABLED.
-
-}
+//
+//}
 
 // The loop function is called in an endless loop
 void loop() {}
@@ -364,9 +369,9 @@ void ConnectStationToNetwork(
 	}
 }
 
-void httpGet(const char * server, const char * request="/", int port=80) {
+WiFiClient httpGet(const char * server, const char * request="/", int port=80) {
 	//
-	// Default port of 80 is used for web access.
+	// Default port of 80 is used for web access but any port may be specified.
 	//
 	WiFiClient client ;
 
@@ -399,5 +404,6 @@ void httpGet(const char * server, const char * request="/", int port=80) {
 		  stayHere() ;
 
 	  }
+	  return client ;
 }
 
