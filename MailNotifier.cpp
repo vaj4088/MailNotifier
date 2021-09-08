@@ -2,6 +2,8 @@
 #include "MailNotifier.h"
 
 #include "ESP8266WiFi.h"
+
+#define REQUEST_SIZE 80
 //
 // Uncomment exactly one of these #define lines:
 //
@@ -159,58 +161,29 @@ void setup()
 	 *
 	 */
 
+	double batteryVoltage = analogRead(A0) * 3.3 / 1023 ;
+
 	#if defined debug
 
 	 WiFiClient wfc = httpGet("45.17.221.124", "/", 21280) ;
 
 	// http://45.17.221.124:21280/
 
+	 Serial.print("Battery voltage is ") ;
+	 Serial.print(batteryVoltage) ;
+	 Serial.println(".") ;
+
     #elif defined noDebug
 
+	 char request[REQUEST_SIZE] ;
+	 snprintf(request, REQUEST_SIZE, "%s%#.2f.", makerRequest, batteryVoltage) ;
 	 WiFiClient wfc = httpGet(
 			 "maker.ifttt.com",
-			 makerRequest
+			 request
 			 ) ;
 
 	 #endif
 	  }
-
-
-	// TODO - Access web server (including voltage reading).
-
-//	 void loop() {
-//
-//	   // if there are incoming bytes available
-//
-//	   // from the server, read them and print them:
-//
-//	   while (client.available()) {
-//
-//	     char c = client.read();
-//
-//	     Serial.write(c);
-//
-//	   }
-//
-//	   // if the server's disconnected, stop the client:
-//
-//	   if (!client.connected()) {
-//
-//	     Serial.println();
-//
-//	     Serial.println("disconnecting from server.");
-//
-//	     client.stop();
-//
-//	     // do nothing forevermore:
-//
-//	     while (true);
-//
-//	   }
-//	 }
-
-	//	  Echo Server outputs "None":
-	//	  http://urlecho.appspot.com/echo
 
 	// TODO - Go into deep sleep.
 
@@ -219,7 +192,6 @@ void setup()
 //	  mode is one of WAKE_RF_DEFAULT, WAKE_RFCAL, WAKE_NO_RFCAL,
 //	  WAKE_RF_DISABLED.
 //
-//}
 
 // The loop function is called in an endless loop
 void loop() {}
