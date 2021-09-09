@@ -157,7 +157,7 @@ void setup()
 	 *
 	 * so use
 	 *
-	 * https://maker.ifttt.com/trigger/Mail_Notifier/with/key/bBzMt3GMKR46GbTLP6v919
+ https://maker.ifttt.com/trigger/Mail_Notifier/with/key/bBzMt3GMKR46GbTLP6v919
 	 *
 	 */
 
