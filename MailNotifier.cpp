@@ -165,7 +165,7 @@ void setup()
 
 	#if defined debug
 
-	 WiFiClient wfc = httpGet("45.17.221.124", "/", 21280) ;
+	 httpGet("45.17.221.124", "/", 21280) ;
 
 	// http://45.17.221.124:21280/
 
@@ -177,7 +177,7 @@ void setup()
 
 	 char request[REQUEST_SIZE] ;
 	 snprintf(request, REQUEST_SIZE, "%s%#.2f.", makerRequest, batteryVoltage) ;
-	 WiFiClient wfc = httpGet(
+	 httpGet(
 			 "maker.ifttt.com",
 			 request
 			 ) ;
@@ -341,7 +341,10 @@ void ConnectStationToNetwork(
 	}
 }
 
-WiFiClient httpGet(const char * server, const char * request="/", int port=80) {
+//
+// Default values for request and port aree defined in the file MailNotifier.h
+//
+void httpGet(const char * server, const char * request, int port) {
 	//
 	// Default port of 80 is used for web access but any port may be specified.
 	//
@@ -376,6 +379,5 @@ WiFiClient httpGet(const char * server, const char * request="/", int port=80) {
 		  stayHere() ;
 
 	  }
-	  return client ;
 }
 
