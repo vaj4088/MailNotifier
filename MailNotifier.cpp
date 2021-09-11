@@ -162,7 +162,8 @@ void setup()
 	 */
 
 //	double batteryVoltage = analogRead(A0) * 3.3 / 1023 ;
-	double batteryVoltage = ESP.getVCC() ;
+	double batteryVoltage = ESP.getVcc() ; // NOTE:
+	                                       // ESP.getVcc() and NOT ESP.getVCC().
 
 	#if defined debug
 
@@ -268,7 +269,9 @@ void ConnectStationToNetwork(
 	//
 	// Set up for station mode.
 	//
+	WiFi.printDiag(Serial) ;
 	success = WiFi.mode(WIFI_STA) ;
+	WiFi.printDiag(Serial) ;
 	Serial.print("WiFi.mode(WIFI_STA) success is ") ;
 	Serial.print(success) ;
 	Serial.println(".") ;
@@ -283,7 +286,9 @@ void ConnectStationToNetwork(
 	//
 	// Configure for network.
 	//
+	WiFi.printDiag(Serial) ;
 	success = WiFi.config(localIp, gateway, subnet, dns1, dns2);
+	WiFi.printDiag(Serial) ;
 	if (!success) {
 		Serial.println("Could not configure.");
 		stayHere();
@@ -312,6 +317,7 @@ void ConnectStationToNetwork(
 	  while (status != WL_CONNECTED) {
 	    Serial.println("Attempting to connect.") ;
 
+		WiFi.printDiag(Serial) ;
 		status = WiFi.begin(
 				writeableNetworkName,
 				writeableNetworkPassword,
@@ -319,6 +325,7 @@ void ConnectStationToNetwork(
 				channel,
 				establishConnection
 				);
+		WiFi.printDiag(Serial) ;
 		Serial.print("WiFi.begin status is ") ;
 		Serial.print(status) ;
 		Serial.println(".") ;
