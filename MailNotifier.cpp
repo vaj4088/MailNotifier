@@ -104,7 +104,7 @@ void setup()
 	Serial.begin(115200);
 
 	unsigned long preparing;
-	unsigned long const waitTime = 2000; // milliseconds
+	unsigned long const waitTime = 3000; // milliseconds
 
 	preparing = millis();
 	while (!delayingIsDone(preparing, waitTime)) {
@@ -161,7 +161,8 @@ void setup()
 	 *
 	 */
 
-	double batteryVoltage = analogRead(A0) * 3.3 / 1023 ;
+//	double batteryVoltage = analogRead(A0) * 3.3 / 1023 ;
+	double batteryVoltage = ESP.getVCC() ;
 
 	#if defined debug
 
@@ -267,7 +268,14 @@ void ConnectStationToNetwork(
 	//
 	// Set up for station mode.
 	//
-	WiFi.mode(WIFI_STA);
+	success = WiFi.mode(WIFI_STA) ;
+	Serial.print("WiFi.mode(WIFI_STA) success is ") ;
+	Serial.print(success) ;
+	Serial.println(".") ;
+	status = WiFi.status();
+	Serial.print("WiFi.mode(WIFI_STA) status is ") ;
+	Serial.print(status) ;
+	Serial.println(".") ;
 	//
 	// End of "Set up for station mode."
 	//
@@ -298,13 +306,49 @@ void ConnectStationToNetwork(
 	//
 	// Connect to network.
 	//
-	WiFi.begin(
+
+	  // attempt to connect to Wifi network:
+	  status = WL_CONNECTED + 1 ;
+	  while (status != WL_CONNECTED) {
+	    Serial.println("Attempting to connect.") ;
+
+		status = WiFi.begin(
+				writeableNetworkName,
+				writeableNetworkPassword,
+				bssid,
+				channel,
+				establishConnection
+				);
+		Serial.print("WiFi.begin status is ") ;
+		Serial.print(status) ;
+		Serial.println(".") ;
+	    // wait 10 seconds for connection:
+	    delay(10000);
+	  }
+
+	  Serial.println("Connected to wifi");
+	status = WiFi.begin(
 			writeableNetworkName,
 			writeableNetworkPassword,
 			bssid,
 			channel,
 			establishConnection
 			);
+	Serial.print("WiFi.begin status is ") ;
+	Serial.print(status) ;
+	Serial.println(".") ;
+	/*
+	typedef enum {
+    WL_NO_SHIELD        = 255,   // for compatibility with WiFi Shield library
+    WL_IDLE_STATUS      = 0,
+    WL_NO_SSID_AVAIL    = 1,
+    WL_SCAN_COMPLETED   = 2,
+    WL_CONNECTED        = 3,
+    WL_CONNECT_FAILED   = 4,
+    WL_CONNECTION_LOST  = 5,
+    WL_DISCONNECTED     = 6
+} wl_status_t;
+	 */
 	//
 	// Erase the private strings.
 	//
@@ -314,6 +358,7 @@ void ConnectStationToNetwork(
 	// End of "Erase the private strings."
 	//
 
+	delay(5000) ;
 	status = WiFi.status();
 	switch (status) {
 	case WL_CONNECTED:
