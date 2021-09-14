@@ -71,14 +71,13 @@ int     status  ;
 // constants won't change:
 const char* ssid     = "*" ; // Replace * by the name (SSID) for your network.
 const char* password = "*" ; // Replace * by the password    for your network.
+
+const unsigned long CONNECTION_WAIT_MILLIS = 5 * 1000 ;
 //
 // Defined in SSID.private
 //
 // const char* makerRequest = "..." ;
 //
-const int bssid = 0 ;
-const byte channel[] = {0} ;
-const boolean establishConnection = true ;
 
 #if defined Home
 
@@ -110,16 +109,11 @@ void setup()
 	while (!delayingIsDone(preparing, waitTime)) {
 	}
 
-	Serial.println("Serial has been set up.");
+	Serial.print("    ") ;
 	//
 	// Version information.
 	//
-	Serial.print("Compiled on ");
-	Serial.print(__DATE__);
-	Serial.print(" at ");
-	Serial.print(__TIME__);
-	Serial.println(" local time.");
-
+	Serial.printf("Compiled on %s at %s local time.\n\n", __DATE__, __TIME__) ;
 	//
 	// Make unit a station, and connect to network.
 	//
@@ -161,19 +155,14 @@ void setup()
 	 *
 	 */
 
-//	double batteryVoltage = analogRead(A0) * 3.3 / 1023 ;
-	double batteryVoltage = ESP.getVcc() ; // NOTE:
+	double batteryVoltage = ESP.getVcc()*(0.00112016306998) ;
+                                           // NOTE:
 	                                       // ESP.getVcc() and NOT ESP.getVCC().
 
 	#if defined debug
 
 	 httpGet("45.17.221.124", "/", 21280) ;
-
-	// http://45.17.221.124:21280/
-
-	 Serial.print("Battery voltage is ") ;
-	 Serial.print(batteryVoltage) ;
-	 Serial.println(".") ;
+	 Serial.printf("\nBattery voltage is %f volts.", batteryVoltage) ;
 
     #elif defined noDebug
 
@@ -266,19 +255,11 @@ void ConnectStationToNetwork(
 		) {
 	char * writeableNetworkName     = (char *) encryptedNetworkName     ;
 	char * writeableNetworkPassword = (char *) encryptedNetworkPassword ;
+
 	//
 	// Set up for station mode.
 	//
-	WiFi.printDiag(Serial) ;
-	success = WiFi.mode(WIFI_STA) ;
-	WiFi.printDiag(Serial) ;
-	Serial.print("WiFi.mode(WIFI_STA) success is ") ;
-	Serial.print(success) ;
-	Serial.println(".") ;
-	status = WiFi.status();
-	Serial.print("WiFi.mode(WIFI_STA) status is ") ;
-	Serial.print(status) ;
-	Serial.println(".") ;
+	WiFi.mode(WIFI_STA) ;
 	//
 	// End of "Set up for station mode."
 	//
@@ -286,9 +267,7 @@ void ConnectStationToNetwork(
 	//
 	// Configure for network.
 	//
-	WiFi.printDiag(Serial) ;
 	success = WiFi.config(localIp, gateway, subnet, dns1, dns2);
-	WiFi.printDiag(Serial) ;
 	if (!success) {
 		Serial.println("Could not configure.");
 		stayHere();
@@ -313,37 +292,27 @@ void ConnectStationToNetwork(
 	//
 
 	  // attempt to connect to Wifi network:
-	  status = WL_CONNECTED + 1 ;
-	  while (status != WL_CONNECTED) {
-	    Serial.println("Attempting to connect.") ;
-
-		WiFi.printDiag(Serial) ;
-		status = WiFi.begin(
+	  while (WiFi.status() != WL_CONNECTED) {
+		unsigned long connectionStart = millis() ;
+		WiFi.begin(
 				writeableNetworkName,
-				writeableNetworkPassword,
-				bssid,
-				channel,
-				establishConnection
+				writeableNetworkPassword
 				);
-		WiFi.printDiag(Serial) ;
-		Serial.print("WiFi.begin status is ") ;
-		Serial.print(status) ;
-		Serial.println(".") ;
-	    // wait 10 seconds for connection:
-	    delay(10000);
+	    // timed wait for connection
+		while (
+				(WiFi.status() != WL_CONNECTED) &&
+				( (millis()-connectionStart) < CONNECTION_WAIT_MILLIS)
+				){
+			yield() ;
+		}
+		unsigned long connectionEnd = millis() ;
+		unsigned long connectionTime = connectionEnd - connectionStart ;
+		if (connectionTime < CONNECTION_WAIT_MILLIS) {
+			Serial.printf("DEBUG >>>>>>>>  Connection attempt took %lu milliseconds.\n", connectionTime) ;
+		} else {
+			Serial.printf("DEBUG >>>>>>>>  Failed to connect in %lu milliseconds.\n", connectionTime) ;
+		}
 	  }
-
-	  Serial.println("Connected to wifi");
-	status = WiFi.begin(
-			writeableNetworkName,
-			writeableNetworkPassword,
-			bssid,
-			channel,
-			establishConnection
-			);
-	Serial.print("WiFi.begin status is ") ;
-	Serial.print(status) ;
-	Serial.println(".") ;
 	/*
 	typedef enum {
     WL_NO_SHIELD        = 255,   // for compatibility with WiFi Shield library
@@ -365,28 +334,31 @@ void ConnectStationToNetwork(
 	// End of "Erase the private strings."
 	//
 
-	delay(5000) ;
 	status = WiFi.status();
 	switch (status) {
 	case WL_CONNECTED:
-		Serial.println("Successful connection.");
+		Serial.println("Successful network connection.");
 		break;
 	case WL_NO_SSID_AVAIL:
-		Serial.print("Failed to connect because ") ;
-		Serial.println("configured SSID could not be reached.");
+		Serial.print("Failed to connect to network because ") ;
+		Serial.println("configured SSID (network name) could not be reached.") ;
 		break;
 	case WL_CONNECT_FAILED:
-		Serial.println("Failed to connect because password is incorrect.");
+		Serial.print("Failed to connect to network ") ;
+		Serial.println("because password is incorrect.") ;
 		break;
 	case WL_IDLE_STATUS:
 		Serial.println("WiFi status is changing.");
 		break;
 	case WL_DISCONNECTED:
-		Serial.print("Failed to connect because ") ;
+		Serial.println("Failed to connect to network because") ;
+		Serial.print("a specific MAC ID (BSSID) was requested ") ;
+		Serial.println("that is not available, or") ;
+		Serial.println("wait time was not long enough, or") ;
 		Serial.println("unit is not configured for station mode.");
 		break;
 	default:
-		Serial.println("Failed to connect due to unknown reason.");
+		Serial.println("Failed to connect to network due to unknown reason.");
 	}
 	if (status != WL_CONNECTED) {
 		stayHere();
@@ -394,7 +366,7 @@ void ConnectStationToNetwork(
 }
 
 //
-// Default values for request and port aree defined in the file MailNotifier.h
+// Default values for request and port are defined in the file MailNotifier.h
 //
 void httpGet(const char * server, const char * request, int port) {
 	//
@@ -402,34 +374,36 @@ void httpGet(const char * server, const char * request, int port) {
 	//
 	WiFiClient client ;
 
-	  if (client.connect(server, port)) {
-	    Serial.println("Connected to server");
+	if (client.connect(server, port)) {
+		Serial.printf("Connected to server %s:%d .\n", server, port) ;
 
-	    // Make a HTTP request:
-	    client.print("GET ") ;
-	    client.print(request) ;
-	    client.println(" HTTP/1.1") ;
+		// Make a HTTP request:
+		client.print("GET ") ;
+		client.print(request) ;
+		client.println(" HTTP/1.1") ;
 
-	    client.print("Host: ") ;
-	    client.println(server) ;
+		client.print("Host: ") ;
+		client.print(server) ;
+		client.print(":") ;
+		client.println(port) ;
 
-	    // if there are incoming bytes available
-	    // from the server, read them and print them:
-	    while (client.available()) {
-	    	char c = client.read();
-	    	Serial.write(c);
-	    }
+//		client.println("Connection: close");
+		client.println();
 
-	    client.println("Connection: close");
-	    client.println();
+		delay(3000) ;
 
-	  } else {
-
-		  Serial.print("Could not connect to server ") ;
-		  Serial.print(server) ;
-		  Serial.println(" .") ;
-		  stayHere() ;
-
-	  }
+		// If there are incoming bytes available
+		// from the server, read them and print them:
+		while (client.available()) {
+			char c = client.read();
+			Serial.write(c);
+		}
+		Serial.printf(
+				"Closing the connection with server %s:%d .\n", server, port
+				) ;
+	} else {
+		Serial.printf("Could not connect to server %s:%d .\n", server, port) ;
+		stayHere() ;
+	}
 }
 
