@@ -179,8 +179,6 @@ void setup()
 	 ESP.deepSleepInstant( 0, WAKE_RF_DEFAULT) ;
 	  }
 
-	// TODO - Go into deep sleep.
-
 //	  ESP.deepSleepInstant(microseconds, mode) will put the chip into deep sleep
 //	  but sleeps instantly without waiting for WiFi to shutdown.
 //	  mode is one of WAKE_RF_DEFAULT, WAKE_RFCAL, WAKE_NO_RFCAL,
@@ -381,9 +379,13 @@ void ConnectStationToNetwork(
 //
 // Default values for request and port are defined in the file MailNotifier.h
 //
-void httpGet(const char * server, const char * request, int port) {
+void httpGet(
+		const char * server, const char * request, int port,
+		int waitMillis) {
 	//
 	// Default port of 80 is used for web access but any port may be specified.
+	// Default wait time of 3 seconds (3000 milliseconds) is used but any
+	//  wait time may be specified.
 	//
 	WiFiClient client ;
 
@@ -403,13 +405,15 @@ void httpGet(const char * server, const char * request, int port) {
 //		client.println("Connection: close");
 		client.println();
 
-		delay(3000) ;
+		if (waitMillis>0) {
+			delay(waitMillis) ;
 
-		// If there are incoming bytes available
-		// from the server, read them and print them:
-		while (client.available()) {
-			char c = client.read();
-			Serial.write(c);
+			// If there are incoming bytes available
+			// from the server, read them and print them:
+			while (client.available()) {
+				char c = client.read();
+				Serial.write(c);
+			}
 		}
 		Serial.printf(
 				"Closing the connection with server %s:%d .\n", server, port
