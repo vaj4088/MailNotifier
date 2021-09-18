@@ -34,3 +34,4 @@
 
 # Secrets
 *.private
+/Holder.txt
