@@ -72,7 +72,7 @@ int     status  ;
 const char* ssid     = "*" ; // Replace * by the name (SSID) for your network.
 const char* password = "*" ; // Replace * by the password    for your network.
 
-const unsigned long CONNECTION_WAIT_MILLIS = 5 * 1000 ;
+const unsigned long CONNECTION_WAIT_MILLIS = 5 * 1000UL ;
 //
 // Defined in SSID.private
 //
@@ -103,10 +103,11 @@ void setup()
 	Serial.begin(115200);
 
 	unsigned long preparing;
-	unsigned long const waitTime = 3000; // milliseconds
+	unsigned long const waitTime = 4000; // milliseconds
 
 	preparing = millis();
 	while (!delayingIsDone(preparing, waitTime)) {
+		yield() ;
 	}
 
 	Serial.print("    ") ;
@@ -162,7 +163,8 @@ void setup()
 	#if defined debug
 
 	 httpGet("45.17.221.124", "/", 21280) ;
-	 Serial.printf("\nBattery voltage is %f volts.", batteryVoltage) ;
+	 Serial.printf("\nBattery voltage is %f volts.\n", batteryVoltage) ;
+	 Serial.flush() ;
 
     #elif defined noDebug
 
@@ -174,6 +176,7 @@ void setup()
 			 ) ;
 
 	 #endif
+	 ESP.deepSleepInstant( 0, WAKE_RF_DEFAULT) ;
 	  }
 
 	// TODO - Go into deep sleep.
@@ -291,28 +294,38 @@ void ConnectStationToNetwork(
 	// Connect to network.
 	//
 
-	  // attempt to connect to Wifi network:
-	  while (WiFi.status() != WL_CONNECTED) {
+	// attempt to connect to Wifi network:
+	if (WiFi.status() == WL_CONNECTED) {
+		Serial.printf("DEBUG >>>>>>>>  Already connected!\n") ;
+	}
+	while (WiFi.status() != WL_CONNECTED) {
 		unsigned long connectionStart = millis() ;
 		WiFi.begin(
 				writeableNetworkName,
 				writeableNetworkPassword
-				);
-	    // timed wait for connection
+		);
+		// timed wait for connection
 		while (
 				(WiFi.status() != WL_CONNECTED) &&
 				( (millis()-connectionStart) < CONNECTION_WAIT_MILLIS)
-				){
+		){
 			yield() ;
 		}
 		unsigned long connectionEnd = millis() ;
 		unsigned long connectionTime = connectionEnd - connectionStart ;
 		if (connectionTime < CONNECTION_WAIT_MILLIS) {
-			Serial.printf("DEBUG >>>>>>>>  Connection attempt took %lu milliseconds.\n", connectionTime) ;
+			Serial.printf(
+				"DEBUG >>>>>>>>  Connection took %lu milliseconds.\n",
+				connectionTime
+			) ;
 		} else {
-			Serial.printf("DEBUG >>>>>>>>  Failed to connect in %lu milliseconds.\n", connectionTime) ;
+			Serial.printf(
+				"DEBUG >>>>>>>>  Failed to connect in %lu milliseconds.\n",
+				connectionTime
+			) ;
+			WiFi.disconnect() ;  //  Reset and try again.
 		}
-	  }
+	}
 	/*
 	typedef enum {
     WL_NO_SHIELD        = 255,   // for compatibility with WiFi Shield library
@@ -406,4 +419,3 @@ void httpGet(const char * server, const char * request, int port) {
 		stayHere() ;
 	}
 }
-
