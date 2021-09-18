@@ -15,16 +15,17 @@
 
 //add your function definitions for the project MailNotifier here
 
-boolean delayingIsDone(unsigned long &since, unsigned long time) ;
-void simpleEncrypt(const char *text) ;
-void simpleDecrypt(const char *text) ;
-void simpleErase(const char *text) ;
-void stayHere() ;
 void ConnectStationToNetwork(
 		const char* encryptedNetworkName,
 		const char* encryptedNetworkPassword
 		) ;
+boolean delayingIsDone(unsigned long &since, unsigned long time) ;
 void httpGet(const char * server, const char * request="/", int port=80) ;
+void scanNetworkSynchronous() ;
+void simpleDecrypt(const char *text) ;
+void simpleEncrypt(const char *text) ;
+void simpleErase(const char *text) ;
+void stayHere() ;
 
 
 
