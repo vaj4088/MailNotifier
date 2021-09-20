@@ -3,7 +3,6 @@
 
 #include "ESP8266WiFi.h"
 
-#define REQUEST_SIZE 80
 //
 // Uncomment exactly one of these #define lines:
 //
@@ -73,6 +72,10 @@ const char* ssid     = "*" ; // Replace * by the name (SSID) for your network.
 const char* password = "*" ; // Replace * by the password    for your network.
 
 const unsigned long CONNECTION_WAIT_MILLIS = 5 * 1000UL ;
+const int REQUEST_SIZE = 80 ;
+const byte pinNumber[] = {D0, D1, D2, D3, D4, D5, D6, D7} ;
+#define numberOfArrayElements(x) (sizeof(x)/sizeof(x[0]))
+
 //
 // Defined in SSID.private
 //
@@ -99,11 +102,15 @@ IPAddress dns2   ( 192, 168,   0, 100) ;
 
 void setup()
 {
+	unsigned long preparing;
+	const unsigned long waitTime = 4000; // milliseconds
+
+	for (byte i = 0 ; i<numberOfArrayElements(pinNumber) ; i++) {
+		pinMode     (pinNumber[i], INPUT_PULLUP) ;
+	}
+
 	// Serial
 	Serial.begin(115200);
-
-	unsigned long preparing;
-	unsigned long const waitTime = 4000; // milliseconds
 
 	preparing = millis();
 	while (!delayingIsDone(preparing, waitTime)) {
