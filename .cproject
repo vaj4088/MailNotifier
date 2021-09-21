@@ -44,6 +44,12 @@
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/core/variant}&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESP8266WiFi/src}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESP8266HTTPUpdateServer/src}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESP8266mDNS/src}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESP8266WebServer/src}&quot;"/>
                                     								
                                 </option>
                                 								
@@ -60,6 +66,12 @@
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/core/variant}&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESP8266WiFi/src}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESP8266HTTPUpdateServer/src}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESP8266mDNS/src}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESP8266WebServer/src}&quot;"/>
                                     								
                                 </option>
                                 								
@@ -76,6 +88,12 @@
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/core/variant}&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESP8266WiFi/src}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESP8266HTTPUpdateServer/src}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESP8266mDNS/src}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESP8266WebServer/src}&quot;"/>
                                     								
                                 </option>
                                 								

@@ -2,6 +2,15 @@
 #include "MailNotifier.h"
 
 #include "ESP8266WiFi.h"
+//
+// The following includes are used for OTA reprogramming.
+//
+#include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h>
+#include <ESP8266HTTPUpdateServer.h>
+//
+// End of "The following includes are used for OTA reprogramming".
+//
 
 //
 // Uncomment exactly one of these #define lines:
@@ -74,6 +83,21 @@ const char* password = "*" ; // Replace * by the password    for your network.
 const unsigned long CONNECTION_WAIT_MILLIS = 5 * 1000UL ;
 const int REQUEST_SIZE = 80 ;
 const byte pinNumber[] = {D0, D1, D2, D3, D4, D5, D6, D7} ;
+const byte otaProgrammingIndicator = D4 ;
+enum executionType {
+	normalExecution = HIGH,
+	otaReprogrammingExecution = LOW
+} executionMode ;
+//
+// The following declarations are used for OTA reprogramming.
+//
+char* otaHost = "MNOTA" ; // ESP8266 Mailbox Notifier OTA programming
+ESP8266WebServer httpServer(80) ;
+ESP8266HTTPUpdateServer httpUpdater ;
+//
+// End of "The following declarations are used for OTA reprogramming".
+//
+
 #define numberOfArrayElements(x) (sizeof(x)/sizeof(x[0]))
 
 //
@@ -102,8 +126,10 @@ IPAddress dns2   ( 192, 168,   0, 100) ;
 
 void setup()
 {
-	unsigned long preparing;
 	const unsigned long waitTime = 4000; // milliseconds
+
+	unsigned long preparing;
+	double batteryVoltage ;
 
 	for (byte i = 0 ; i<numberOfArrayElements(pinNumber) ; i++) {
 		pinMode     (pinNumber[i], INPUT_PULLUP) ;
@@ -122,6 +148,7 @@ void setup()
 	// Version information.
 	//
 	Serial.printf("Compiled on %s at %s local time.\n\n", __DATE__, __TIME__) ;
+
 	//
 	// Make unit a station, and connect to network.
 	//
@@ -148,6 +175,13 @@ void setup()
 	// End of "Erase the private encrypted strings."
 	//
 
+	if (digitalRead(otaProgrammingIndicator)==normalExecution) {
+		executionMode = normalExecution ;
+	} else {
+		executionMode = otaReprogrammingExecution ;
+	}
+	if (executionMode==normalExecution) {
+
 	/*
 	 * Want to access
 	 *
@@ -159,32 +193,41 @@ void setup()
 	 *
 	 * so use
 	 *
- https://maker.ifttt.com/trigger/Mail_Notifier/with/key/bBzMt3GMKR46GbTLP6v919
+		https://maker.ifttt.com/trigger/Mail_Notifier/with/key/bBzMt3GMKR46GbTLP6v919
 	 *
 	 */
 
-	double batteryVoltage = ESP.getVcc()*(0.00112016306998) ;
-                                           // NOTE:
-	                                       // ESP.getVcc() and NOT ESP.getVCC().
+		double batteryVoltage = ESP.getVcc()*(0.00112016306998) ;
+		// NOTE:
+		// ESP.getVcc() and NOT ESP.getVCC().
 
-	#if defined debug
+#if defined debug
 
-	 httpGet("45.17.221.124", "/", 21280) ;
-	 Serial.printf("\nBattery voltage is %f volts.\n", batteryVoltage) ;
-	 Serial.flush() ;
+		httpGet("45.17.221.124", "/", 21280) ;
+		Serial.printf("\nBattery voltage is %f volts.\n", batteryVoltage) ;
+		Serial.flush() ;
 
-    #elif defined noDebug
+#elif defined noDebug
 
-	 char request[REQUEST_SIZE] ;
-	 snprintf(request, REQUEST_SIZE, "%s%#.2f.", makerRequest, batteryVoltage) ;
-	 httpGet(
-			 "maker.ifttt.com",
-			 request
-			 ) ;
+		char request[REQUEST_SIZE] ;
+		snprintf(request, REQUEST_SIZE, "%s%#.2f.", makerRequest, batteryVoltage) ;
+		httpGet(
+				"maker.ifttt.com",
+				request
+		) ;
 
-	 #endif
-	 ESP.deepSleepInstant( 0, WAKE_RF_DEFAULT) ;
-	  }
+#endif
+		ESP.deepSleepInstant( 0, WAKE_RF_DEFAULT) ;
+	} else {  // REPROGRAM OTA (Over The Air) using a web browser !
+		Serial.printf("\n\nOTA Reprogramming via a web browser !\n\n\n") ;
+		//                   1         2         3         4
+		//          1234567890123456789012345678901234567890
+		MDNS.begin(otaHost) ;
+		httpUpdater.setup(&httpServer);
+		httpServer.begin();
+
+		MDNS.addService("http", "tcp", 80);	}
+}
 
 //	  ESP.deepSleepInstant(microseconds, mode) will put the chip into deep sleep
 //	  but sleeps instantly without waiting for WiFi to shutdown.
@@ -193,7 +236,18 @@ void setup()
 //
 
 // The loop function is called in an endless loop
-void loop() {}
+void loop() {
+	//
+	// Nothing to do for normal execution.
+	// (Deep Sleep should keep us from getting here.)
+	//
+	// However, need to do some work for OTA reprogramming.
+	//
+	if (executionMode==otaReprogrammingExecution) {
+		httpServer.handleClient();
+		MDNS.update();
+	}
+}
 
 boolean delayingIsDone(unsigned long &since, unsigned long time) {
   // return false if we're still "delaying", true if time ms has passed.
