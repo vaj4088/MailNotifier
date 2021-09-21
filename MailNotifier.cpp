@@ -91,9 +91,9 @@ enum executionType {
 //
 // The following declarations are used for OTA reprogramming.
 //
-char* otaHost = "MNOTA" ; // ESP8266 Mailbox Notifier OTA programming
 ESP8266WebServer httpServer(80) ;
 ESP8266HTTPUpdateServer httpUpdater ;
+const char* otaHost = "MNOTA" ; // ESP8266 Mailbox Notifier OTA programming
 const char * updateMessage =
 	"HTTP Update Server ready! Open http://%s.local/update in your browser.\n" ;
 //
@@ -199,7 +199,7 @@ void setup()
 	 *
 	 */
 
-		double batteryVoltage = ESP.getVcc()*(0.00112016306998) ;
+		batteryVoltage = ESP.getVcc()*(0.00112016306998) ;
 		// NOTE:
 		// ESP.getVcc() and NOT ESP.getVCC().
 
