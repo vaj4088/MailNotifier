@@ -94,6 +94,8 @@ enum executionType {
 char* otaHost = "MNOTA" ; // ESP8266 Mailbox Notifier OTA programming
 ESP8266WebServer httpServer(80) ;
 ESP8266HTTPUpdateServer httpUpdater ;
+const char * updateMessage =
+	"HTTP Update Server ready! Open http://%s.local/update in your browser.\n" ;
 //
 // End of "The following declarations are used for OTA reprogramming".
 //
@@ -226,7 +228,9 @@ void setup()
 		httpUpdater.setup(&httpServer);
 		httpServer.begin();
 
-		MDNS.addService("http", "tcp", 80);	}
+		MDNS.addService("http", "tcp", 80);
+		Serial.printf( updateMessage, otaHost) ;
+	}
 }
 
 //	  ESP.deepSleepInstant(microseconds, mode) will put the chip into deep sleep
