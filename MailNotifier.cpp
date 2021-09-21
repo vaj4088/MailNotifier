@@ -83,7 +83,7 @@ const char* password = "*" ; // Replace * by the password    for your network.
 const unsigned long CONNECTION_WAIT_MILLIS = 5 * 1000UL ;
 const int REQUEST_SIZE = 80 ;
 const byte pinNumber[] = {D0, D1, D2, D3, D4, D5, D6, D7} ;
-const byte otaProgrammingIndicator = D4 ;
+const byte otaProgrammingIndicator = D2 ;
 enum executionType {
 	normalExecution = HIGH,
 	otaReprogrammingExecution = LOW
