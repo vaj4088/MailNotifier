@@ -83,6 +83,15 @@ const char* password = "*" ; // Replace * by the password    for your network.
 const unsigned long CONNECTION_WAIT_MILLIS = 5 * 1000UL ;
 const int REQUEST_SIZE = 80 ;
 const byte pinNumber[] = {D0, D1, D2, D3, D4, D5, D6, D7} ;
+//
+// The internal pull up/down resistors have values of 30kΩ to 100kΩ,
+// according to https://bbs.espressif.com/viewtopic.php?t=1079 .//
+//
+// Avoid GIO0, GPIO2, and GPIO15 because these control boot mode.
+// These correspond on an ESP8266 D1 Mini Pro to
+// D3, D4, and D8.
+// D2 is GPIO4 and may be the SDA line of I2C.
+//
 const byte otaProgrammingIndicator = D2 ;
 enum executionType {
 	normalExecution = HIGH,
@@ -95,7 +104,7 @@ ESP8266WebServer httpServer(80) ;
 ESP8266HTTPUpdateServer httpUpdater ;
 const char* otaHost = "MNOTA" ; // ESP8266 Mailbox Notifier OTA programming
 const char * updateMessage =
-	"HTTP Update Server ready! Open http://%s.local/update in your browser.\n" ;
+"HTTP Update Server ready! Open http://%s/update in your browser.\n" ;
 //
 // End of "The following declarations are used for OTA reprogramming".
 //
@@ -128,7 +137,7 @@ IPAddress dns2   ( 192, 168,   0, 100) ;
 
 void setup()
 {
-	const unsigned long waitTime = 4000; // milliseconds
+	const unsigned long waitTime = 6000; // milliseconds
 
 	unsigned long preparing;
 	double batteryVoltage ;
@@ -149,7 +158,7 @@ void setup()
 	//
 	// Version information.
 	//
-	Serial.printf("Compiled on %s at %s local time.\n\n", __DATE__, __TIME__) ;
+	Serial.printf("%s-%s.\n\n", __DATE__, __TIME__) ;
 
 	//
 	// Make unit a station, and connect to network.
@@ -225,11 +234,11 @@ void setup()
 		//                   1         2         3         4
 		//          1234567890123456789012345678901234567890
 		MDNS.begin(otaHost) ;
-		httpUpdater.setup(&httpServer);
-		httpServer.begin();
+		httpUpdater.setup(&httpServer) ;
+		httpServer.begin() ;
 
-		MDNS.addService("http", "tcp", 80);
-		Serial.printf( updateMessage, otaHost) ;
+		MDNS.addService("http", "tcp", 80) ;
+		Serial.printf( updateMessage, localIp.toString().c_str()) ;
 	}
 }
 
