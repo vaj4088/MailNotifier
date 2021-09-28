@@ -137,10 +137,10 @@ IPAddress dns2   ( 192, 168,   0, 100) ;
 
 void setup()
 {
-	const unsigned long waitTime = 6000; // milliseconds
+	const unsigned long waitTime = 4000; // milliseconds
 
-	unsigned long preparing;
-	double batteryVoltage ;
+//	unsigned long preparing;
+//	double batteryVoltage ;
 
 	for (byte i = 0 ; i<numberOfArrayElements(pinNumber) ; i++) {
 		pinMode     (pinNumber[i], INPUT_PULLUP) ;
@@ -149,16 +149,18 @@ void setup()
 	// Serial
 	Serial.begin(115200);
 
-	preparing = millis();
-	while (!delayingIsDone(preparing, waitTime)) {
-		yield() ;
-	}
+//	preparing = millis();
+//	while (!delayingIsDone(preparing, waitTime)) {
+//		yield() ;
+//	}
 
-	Serial.print("    ") ;
+	Serial.flush() ;
+
+//	Serial.print("    ") ;
 	//
 	// Version information.
 	//
-	Serial.printf("%s-%s.\n\n", __DATE__, __TIME__) ;
+//	Serial.printf("%s %s\n\n", __DATE__, __TIME__) ;
 
 	//
 	// Make unit a station, and connect to network.
@@ -221,7 +223,15 @@ void setup()
 #elif defined noDebug
 
 		char request[REQUEST_SIZE] ;
-		snprintf(request, REQUEST_SIZE, "%s%#.2f.", makerRequest, batteryVoltage) ;
+		snprintf(
+				request,
+				REQUEST_SIZE,
+				"%s%#.2f&value2=%s&value3=%s",
+				makerRequest,
+				batteryVoltage,
+				__DATE__,
+				__TIME__
+				) ;
 		httpGet(
 				"maker.ifttt.com",
 				request
@@ -238,7 +248,7 @@ void setup()
 		httpServer.begin() ;
 
 		MDNS.addService("http", "tcp", 80) ;
-		Serial.printf( updateMessage, localIp.toString().c_str()) ;
+		Serial.printf( updateMessage, WiFi.localIP().toString().c_str()) ;
 	}
 }
 
@@ -367,9 +377,9 @@ void ConnectStationToNetwork(
 	//
 
 	// attempt to connect to Wifi network:
-	if (WiFi.status() == WL_CONNECTED) {
-		Serial.printf("DEBUG >>>>>>>>  Already connected!\n") ;
-	}
+//	if (WiFi.status() == WL_CONNECTED) {
+//		Serial.printf("DEBUG >>>>>>>>  Already connected!\n") ;
+//	}
 	while (WiFi.status() != WL_CONNECTED) {
 		unsigned long connectionStart = millis() ;
 		WiFi.begin(
@@ -386,15 +396,15 @@ void ConnectStationToNetwork(
 		unsigned long connectionEnd = millis() ;
 		unsigned long connectionTime = connectionEnd - connectionStart ;
 		if (connectionTime < CONNECTION_WAIT_MILLIS) {
-			Serial.printf(
-				"DEBUG >>>>>>>>  Connection took %lu milliseconds.\n",
-				connectionTime
-			) ;
+//			Serial.printf(
+//				"DEBUG >>>>>>>>  Connection took %lu milliseconds.\n",
+//				connectionTime
+//			) ;
 		} else {
-			Serial.printf(
-				"DEBUG >>>>>>>>  Failed to connect in %lu milliseconds.\n",
-				connectionTime
-			) ;
+//			Serial.printf(
+//				"DEBUG >>>>>>>>  Failed to connect in %lu milliseconds.\n",
+//				connectionTime
+//			) ;
 			WiFi.disconnect() ;  //  Reset and try again.
 		}
 	}
@@ -422,7 +432,7 @@ void ConnectStationToNetwork(
 	status = WiFi.status();
 	switch (status) {
 	case WL_CONNECTED:
-		Serial.println("Successful network connection.");
+//		Serial.println("Successful network connection.");
 		break;
 	case WL_NO_SSID_AVAIL:
 		Serial.print("Failed to connect to network because ") ;
@@ -464,7 +474,7 @@ void httpGet(
 	WiFiClient client ;
 
 	if (client.connect(server, port)) {
-		Serial.printf("Connected to server %s:%d .\n", server, port) ;
+//		Serial.printf("Connected to server %s:%d .\n", server, port) ;
 
 		// Make a HTTP request:
 		client.print("GET ") ;
@@ -489,9 +499,9 @@ void httpGet(
 				Serial.write(c);
 			}
 		}
-		Serial.printf(
-				"Closing the connection with server %s:%d .\n", server, port
-				) ;
+//		Serial.printf(
+//				"Closing the connection with server %s:%d .\n", server, port
+//				) ;
 	} else {
 		Serial.printf("Could not connect to server %s:%d .\n", server, port) ;
 		stayHere() ;
