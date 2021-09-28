@@ -104,7 +104,7 @@ ESP8266WebServer httpServer(80) ;
 ESP8266HTTPUpdateServer httpUpdater ;
 const char* otaHost = "MNOTA" ; // ESP8266 Mailbox Notifier OTA programming
 const char * updateMessage =
-"HTTP Update Server ready! Open http://%s/update in your browser.\n" ;
+"\nHTTP Update Server ready! Open http://%s/update in your browser.\n" ;
 //
 // End of "The following declarations are used for OTA reprogramming".
 //
@@ -137,10 +137,10 @@ IPAddress dns2   ( 192, 168,   0, 100) ;
 
 void setup()
 {
-	const unsigned long waitTime = 4000; // milliseconds
+//	const unsigned long waitTime = 4000; // milliseconds
 
 //	unsigned long preparing;
-//	double batteryVoltage ;
+	double batteryVoltage ;
 
 	for (byte i = 0 ; i<numberOfArrayElements(pinNumber) ; i++) {
 		pinMode     (pinNumber[i], INPUT_PULLUP) ;
@@ -240,7 +240,7 @@ void setup()
 #endif
 		ESP.deepSleepInstant( 0, WAKE_RF_DEFAULT) ;
 	} else {  // REPROGRAM OTA (Over The Air) using a web browser !
-		Serial.printf("\n\nOTA Reprogramming via a web browser !\n\n\n") ;
+//		Serial.printf("\n\nOTA Reprogramming via a web browser !\n\n\n") ;
 		//                   1         2         3         4
 		//          1234567890123456789012345678901234567890
 		MDNS.begin(otaHost) ;
