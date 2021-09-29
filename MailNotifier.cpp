@@ -218,6 +218,7 @@ void setup()
 
 		httpGet("45.17.221.124", "/", 21280) ;
 		Serial.printf("\nBattery voltage is %f volts.\n", batteryVoltage) ;
+		Serial.printf("Compiled on %s %s\n\n", __DATE__, __TIME__) ;
 		Serial.flush() ;
 
 #elif defined noDebug
