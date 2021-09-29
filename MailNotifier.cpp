@@ -461,7 +461,7 @@ void ConnectStationToNetwork(
 }
 
 //
-// Default values for request and port are defined in the file MailNotifier.h
+// Default values for port and wait time are defined in the file MailNotifier.h
 //
 void httpGet(
 		const char * server, const char * request, int port,
@@ -469,7 +469,8 @@ void httpGet(
 	//
 	// Default port of 80 is used for web access but any port may be specified.
 	// Default wait time of 3 seconds (3000 milliseconds) is used but any
-	//  wait time may be specified.
+	// wait time may be specified.  0 for the wait time means don't get
+	// response from the server.
 	//
 	WiFiClient client ;
 
