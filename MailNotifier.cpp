@@ -8,6 +8,10 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <ESP8266HTTPUpdateServer.h>
+#include <ESP8266WiFi.h>
+//#include <ESPAsyncTCP.h>
+//#include <ESPAsyncWebServer.h>
+//#include <AsyncElegantOTA.h>
 //
 // End of "The following includes are used for OTA reprogramming".
 //
@@ -102,6 +106,7 @@ enum executionType {
 //
 ESP8266WebServer httpServer(80) ;
 ESP8266HTTPUpdateServer httpUpdater ;
+//AsyncWebServer server(80);
 const char* otaHost = "MNOTA" ; // ESP8266 Mailbox Notifier OTA programming
 const char * updateMessage =
 "\nHTTP Update Server ready! Open http://%s/update in your browser.\n" ;
@@ -227,18 +232,22 @@ void setup()
 		snprintf(
 				request,
 				REQUEST_SIZE,
-				"%s%#.2f&value2=%s&value3=%s",
+				"\"%s%#.2f (%s %s)\"",
 				makerRequest,
 				batteryVoltage,
 				__DATE__,
 				__TIME__
 				) ;
-		httpGet(
-				"maker.ifttt.com",
+		Serial.printf(
+				"GETting from maker.ifttt.com using \n%s\n\n",
 				request,
-				,
-				0
-		) ;
+				) ;
+//		httpGet(
+//				"maker.ifttt.com",
+//				request,
+//				,
+//				0
+//		) ;
 
 #endif
 		ESP.deepSleepInstant( 0, WAKE_RF_DEFAULT) ;
@@ -248,9 +257,19 @@ void setup()
 		//          1234567890123456789012345678901234567890
 		MDNS.begin(otaHost) ;
 		httpUpdater.setup(&httpServer) ;
+		httpServer.onNotFound([]() {
+			httpServer.send(200, "text/plain", "Go to /update.") ;
+	    });
 		httpServer.begin() ;
 
 		MDNS.addService("http", "tcp", 80) ;
+
+//		  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+//		    request->send(200, "text/plain", "Go to /update.");
+//		  });
+
+//		  AsyncElegantOTA.begin(&server);    // Start ElegantOTA
+//		  server.begin();
 		Serial.printf( updateMessage, WiFi.localIP().toString().c_str()) ;
 	}
 }

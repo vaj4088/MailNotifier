@@ -50,6 +50,18 @@
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESP8266mDNS/src}&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESP8266WebServer/src}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/Hash/src}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/AsyncElegantOTA/src}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ArduinoOTA}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/DNSServer/src}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESPAsyncTCP}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESPAsyncWebServer}&quot;"/>
                                     								
                                 </option>
                                 								
@@ -72,6 +84,18 @@
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESP8266mDNS/src}&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESP8266WebServer/src}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/Hash/src}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/AsyncElegantOTA/src}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ArduinoOTA}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/DNSServer/src}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESPAsyncTCP}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESPAsyncWebServer}&quot;"/>
                                     								
                                 </option>
                                 								
@@ -94,6 +118,18 @@
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESP8266mDNS/src}&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESP8266WebServer/src}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/Hash/src}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/AsyncElegantOTA/src}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ArduinoOTA}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/DNSServer/src}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESPAsyncTCP}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MailNotifier/libraries/ESPAsyncWebServer}&quot;"/>
                                     								
                                 </option>
                                 								
@@ -115,7 +151,7 @@
                     					
                     <sourceEntries>
                         						
-                        <entry excluding="libraries/?*/**/?xamples/**|libraries/?*/**/?xtras/**|libraries/?*/**/test*/**|libraries/?*/**/third-party/**|libraries/**/._*|libraries/?*/utility/*/*" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
+                        <entry excluding="libraries/AsyncElegantOTA/docs|libraries/AsyncElegantOTA/ui|libraries/?*/**/?xamples/**|libraries/?*/**/?xtras/**|libraries/?*/**/test*/**|libraries/?*/**/third-party/**|libraries/**/._*|libraries/?*/utility/*/*" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
                         					
                     </sourceEntries>
                     				

@@ -42,6 +42,21 @@
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.7.4/variants/d1_mini</locationURI>
 		</link>
 		<link>
+			<name>libraries/ArduinoOTA</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.7.4/libraries/ArduinoOTA</locationURI>
+		</link>
+		<link>
+			<name>libraries/AsyncElegantOTA</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/AsyncElegantOTA/2.2.6</locationURI>
+		</link>
+		<link>
+			<name>libraries/DNSServer</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.7.4/libraries/DNSServer</locationURI>
+		</link>
+		<link>
 			<name>libraries/ESP8266HTTPUpdateServer</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.7.4/libraries/ESP8266HTTPUpdateServer</locationURI>
@@ -60,6 +75,21 @@
 			<name>libraries/ESP8266mDNS</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.7.4/libraries/ESP8266mDNS</locationURI>
+		</link>
+		<link>
+			<name>libraries/ESPAsyncTCP</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/ESPAsyncTCP/ssl</locationURI>
+		</link>
+		<link>
+			<name>libraries/ESPAsyncWebServer</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/ESPAsyncWebServer/src</locationURI>
+		</link>
+		<link>
+			<name>libraries/Hash</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.7.4/libraries/Hash</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
