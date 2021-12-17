@@ -23,10 +23,31 @@
 // #define Aiden
 
 //
+// Define the channel to be used.  0 < Ian_Channel < 12
+// Special Case: Ian_Channel = 0 means automatically search
+//               for the appropriate channel.
+//
+// Ian_Channel < 0 OR Ian_Channel > 11 constitutes an error!
+//
+#define Ian_Channel 1
+
+//
 // Uncomment exactly one of these #define lines:
 //
 #define debug
 // #define noDebug
+
+//
+// Uncomment exactly one of these #define lines:
+//
+#define Ian_debug2
+// #define Ian_noDebug2
+
+//
+// Uncomment exactly one of these #define lines:
+//
+#define Ian_debug3
+// #define Ian_noDebug3
 
 /*
  * Want to access
@@ -167,6 +188,11 @@ void setup()
 	//
 //	Serial.printf("%s %s\n\n", __DATE__, __TIME__) ;
 
+#if defined Ian_debug3
+	scanNetworkSynchronous() ;
+#endif
+
+
 	//
 	// Make unit a station, and connect to network.
 	//
@@ -305,6 +331,34 @@ boolean delayingIsDone(unsigned long &since, unsigned long time) {
   return false;
 }
 
+#if defined Ian_debug3
+void scanNetworkSynchronous() {
+	const char* formatString ;
+	WiFi.mode(WIFI_STA);
+	WiFi.disconnect();
+	delay(100);
+	WiFi.scanDelete();
+	Serial.println("Network scan starting.");
+	int numberOfNetworks = WiFi.scanNetworks();
+	if (numberOfNetworks == 1) {
+		formatString = "%d network found.\n" ;
+	} else {
+		formatString = "%d networks found.\n" ;
+	}
+	Serial.printf(formatString, numberOfNetworks) ;
+	for (int i = 0; i < numberOfNetworks; i++)
+	{
+		Serial.printf(
+				"%d: %s, Ch:%d (%ddBm) %s\n", i+1, WiFi.SSID(i).c_str(),
+				WiFi.channel(i), WiFi.RSSI(i),
+				WiFi.encryptionType(i) == ENC_TYPE_NONE ? "open" : ""
+		);
+	}
+	WiFi.scanDelete();
+	Serial.println();
+}
+#endif
+
 void simpleEncrypt(const char *text) {
 	char * textPointer = (char *)text ;
 	Serial.print("Input:  ") ;
@@ -404,10 +458,27 @@ void ConnectStationToNetwork(
 //	}
 	while (WiFi.status() != WL_CONNECTED) {
 		unsigned long connectionStart = millis() ;
-		WiFi.begin(
-				writeableNetworkName,
-				writeableNetworkPassword
-		);
+
+#ifdef Ian_Channel
+	#if (Ian_Channel > 0) && (Ian_Channel < 12)
+			WiFi.begin(
+					writeableNetworkName,
+					writeableNetworkPassword,
+					Ian_Channel
+			);
+		#elif (Ian_Channel == 0)
+			WiFi.begin(
+					writeableNetworkName,
+					writeableNetworkPassword
+			);
+		#else
+			#error "Ian_Channel has bad value,"
+			#errror "should be an integer in the range [0, 11]"
+	#endif /* if (Ian_Channel > 0) && (Ian_Channel < 12) */
+	#else
+		#error "Ian_Channel should be defined and is not."
+#endif /* ifdef Ian_Channel */
+
 		// timed wait for connection
 		while (
 				(WiFi.status() != WL_CONNECTED) &&
@@ -418,15 +489,19 @@ void ConnectStationToNetwork(
 		unsigned long connectionEnd = millis() ;
 		unsigned long connectionTime = connectionEnd - connectionStart ;
 		if (connectionTime < CONNECTION_WAIT_MILLIS) {
-//			Serial.printf(
-//				"DEBUG >>>>>>>>  Connection took %lu milliseconds.\n",
-//				connectionTime
-//			) ;
+#if defined Ian_debug2
+			Serial.printf(
+				"DEBUG >>>>>>>>  Connection took %lu milliseconds.\n",
+				connectionTime
+			) ;
+#endif
 		} else {
-//			Serial.printf(
-//				"DEBUG >>>>>>>>  Failed to connect in %lu milliseconds.\n",
-//				connectionTime
-//			) ;
+#if defined Ian_debug2
+			Serial.printf(
+				"DEBUG >>>>>>>>  Failed to connect in %lu milliseconds.\n",
+				connectionTime
+			) ;
+#endif
 			WiFi.disconnect() ;  //  Reset and try again.
 		}
 	}
@@ -454,7 +529,9 @@ void ConnectStationToNetwork(
 	status = WiFi.status();
 	switch (status) {
 	case WL_CONNECTED:
-//		Serial.println("Successful network connection.");
+#if defined Ian_debug2
+		Serial.println("Successful network connection.");
+#endif
 		break;
 	case WL_NO_SSID_AVAIL:
 		Serial.print("Failed to connect to network because ") ;
