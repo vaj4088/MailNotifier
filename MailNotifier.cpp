@@ -247,7 +247,8 @@ void setup()
 
 #if defined debug
 
-		httpGet("45.17.221.124", "/", 21280) ;
+//		httpGet("45.17.221.124", "/", 21280) ; // TABLO at home.
+		httpGet("12.153.148.59", "/", 80) ;    // www.smartmetertexas.com login
 		Serial.printf("\nBattery voltage is %f volts.\n", batteryVoltage) ;
 		Serial.printf("Compiled on %s %s\n\n", __DATE__, __TIME__) ;
 		Serial.flush() ;
@@ -494,7 +495,8 @@ void ConnectStationToNetwork(
 				"DEBUG >>>>>>>>  Connection took %lu milliseconds.\n",
 				connectionTime
 			) ;
-#endif
+// https://www.arduino.cc/en/Reference/WiFiRSSI
+			#endif
 		} else {
 #if defined Ian_debug2
 			Serial.printf(
