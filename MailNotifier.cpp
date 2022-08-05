@@ -1,6 +1,4 @@
-// Do not remove the include below
 #include "MailNotifier.h"
-
 #include "ESP8266WiFi.h"
 //
 // The following includes are used for OTA reprogramming.
@@ -9,9 +7,6 @@
 #include <ESP8266mDNS.h>
 #include <ESP8266HTTPUpdateServer.h>
 #include <ESP8266WiFi.h>
-//#include  <ESPAsyncTCP.h>
-//#include <ESPAsyncWebServer.h>
-//#include <AsyncElegantOTA.h>
 //
 // End of "The following includes are used for OTA reprogramming".
 //
@@ -127,7 +122,7 @@ enum executionType {
 //
 ESP8266WebServer httpServer(80) ;
 ESP8266HTTPUpdateServer httpUpdater ;
-//AsyncWebServer server(80);
+
 const char* otaHost = "MNOTA" ; // ESP8266 Mailbox Notifier OTA programming
 const char * updateMessage =
 "\nHTTP Update Server ready! Open http://%s/update in your browser.\n" ;
@@ -163,9 +158,6 @@ IPAddress dns2   ( 192, 168,   0, 100) ;
 
 void setup()
 {
-//	const unsigned long waitTime = 4000; // milliseconds
-
-//	unsigned long preparing;
 	double batteryVoltage ;
 
 	for (byte i = 0 ; i<numberOfArrayElements(pinNumber) ; i++) {
@@ -175,23 +167,11 @@ void setup()
 	// Serial
 	Serial.begin(115200);
 
-//	preparing = millis();
-//	while (!delayingIsDone(preparing, waitTime)) {
-//		yield() ;
-//	}
-
 	Serial.flush() ;
-
-//	Serial.print("    ") ;
-	//
-	// Version information.
-	//
-//	Serial.printf("%s %s\n\n", __DATE__, __TIME__) ;
 
 #if defined Ian_debug3
 	scanNetworkSynchronous() ;
 #endif
-
 
 	//
 	// Make unit a station, and connect to network.
@@ -237,7 +217,7 @@ void setup()
 	 *
 	 * so use
 	 *
-		https://maker.ifttt.com/trigger/Mail_Notifier/with/key/bBzMt3GMKR46GbTLP6v919
+ https://maker.ifttt.com/trigger/Mail_Notifier/with/key/bBzMt3GMKR46GbTLP6v919
 	 *
 	 */
 
@@ -291,12 +271,6 @@ void setup()
 
 		MDNS.addService("http", "tcp", 80) ;
 
-//		  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-//		    request->send(200, "text/plain", "Go to /update.");
-//		  });
-
-//		  AsyncElegantOTA.begin(&server);    // Start ElegantOTA
-//		  server.begin();
 		Serial.printf( updateMessage, WiFi.localIP().toString().c_str()) ;
 	}
 }
