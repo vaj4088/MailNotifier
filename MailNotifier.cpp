@@ -29,20 +29,20 @@
 //
 // Uncomment exactly one of these #define lines:
 //
-#define debug
-// #define noDebug
+// #define debug
+ #define noDebug
 
 //
 // Uncomment exactly one of these #define lines:
 //
-#define Ian_debug2
-// #define Ian_noDebug2
+// #define Ian_debug2
+ #define Ian_noDebug2
 
 //
 // Uncomment exactly one of these #define lines:
 //
-#define Ian_debug3
-// #define Ian_noDebug3
+// #define Ian_debug3
+ #define Ian_noDebug3
 
 /*
  * Want to access
@@ -245,16 +245,16 @@ void setup()
 				__DATE__,
 				__TIME__
 				) ;
-		Serial.printf(
-				"GETting from maker.ifttt.com using \n%s\n\n",
-				request,
-				) ;
-//		httpGet(
-//				"maker.ifttt.com",
+//		Serial.printf(
+//				"GETting from maker.ifttt.com using \n%s\n\n",
 //				request,
-//				,
-//				0
-//		) ;
+//				) ;
+		httpGet(
+				"maker.ifttt.com",
+				request,
+				,
+				0
+		) ;
 
 #endif
 		ESP.deepSleepInstant( 0, WAKE_RF_DEFAULT) ;
