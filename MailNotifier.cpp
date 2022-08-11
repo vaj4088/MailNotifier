@@ -210,7 +210,7 @@ void setup()
 	/*
 	 * Want to access
 	 *
-	 * https://maker.ifttt.com/trigger/{event}/with/key/bBzMt3GMKR46GbTLP6v919
+	 * https://maker.ifttt.com/trigger/{event}/with/key/<IFTTT_Service_key>
 	 *
 	 * to trigger ifttt.com to send a text to Ronni.
 	 *
@@ -218,7 +218,7 @@ void setup()
 	 *
 	 * so use
 	 *
- https://maker.ifttt.com/trigger/Mail_Notifier/with/key/bBzMt3GMKR46GbTLP6v919
+ https://maker.ifttt.com/trigger/Mail_Notifier/with/key/<IFTTT_Service_key>
 	 *
 	 */
 
