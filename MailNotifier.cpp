@@ -240,7 +240,8 @@ void setup()
 		snprintf(
 				request,
 				REQUEST_SIZE,
-				"\"%s%#.2f (%s %s)\"",
+//				"\"%s%#.2f (%s %s)\"",
+				"%s%#.2f (%s %s)",
 				makerRequest,
 				batteryVoltage,
 				__DATE__,
