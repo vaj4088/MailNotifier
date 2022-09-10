@@ -28,6 +28,23 @@
 #define Ian_Channel 1
 
 //
+// Define the local socket to be used for debugging.
+//
+#define Ian_LocalDebugSocket 8080
+
+//
+// Define the local name or IP address to be used for debugging.
+// Coyote2021Linux = 192.168.1.66
+//
+#define Ian_LocalDebugAddress "Coyote2021Linux"
+
+//
+// Uncomment exactly one of these #define lines:
+//
+ #define Ian_LocalDebugViaSocket
+// #define Ian_NoLocalDebugViaSocket
+
+//
 // Uncomment exactly one of these #define lines:
 //
 // #define debug
@@ -46,7 +63,7 @@
  #define Ian_noDebug3
 
 /*
- * Want to access
+ * Wanted to access
  *
  * https://maker.ifttt.com/trigger/{event}/with/key/bBzMt3GMKR46GbTLP6v919
  *
@@ -208,7 +225,7 @@ void setup()
 	if (executionMode==normalExecution) {
 
 	/*
-	 * Want to access
+	 * Wanted to access
 	 *
 	 * https://maker.ifttt.com/trigger/{event}/with/key/<IFTTT_Service_key>
 	 *
@@ -225,6 +242,23 @@ void setup()
 		batteryVoltage = ESP.getVcc()*(0.00112016306998) ;
 		// NOTE:
 		// ESP.getVcc() and NOT ESP.getVCC().
+
+#if defined Ian_LocalDebugViaSocket
+		WiFiClient debug ;
+		debug.connect(Ian_LocalDebugAddress, Ian_LocalDebugSocket) ;
+
+		debug.print("Connected to" ) ;
+		debug.print(Ian_LocalDebugAddress) ;
+		debug.print(" at port ") ;
+		debug.print(Ian_LocalDebugSocket) ;
+		debug.println(".") ;
+
+		debug.printf("\nBattery voltage is %f volts.\n", batteryVoltage) ;
+		debug.printf("Compiled on %s %s\n\n", __DATE__, __TIME__) ;
+		debug.flush() ;
+
+#elif defined Ian_NoLocalDebugViaSocket
+#endif
 
 #if defined debug
 
@@ -538,7 +572,8 @@ void ConnectStationToNetwork(
 }
 
 //
-// Default values for port and wait time are defined in the file MailNotifier.h
+// Default values for request, port and wait time are defined in the file
+// MailNotifier.h
 //
 void httpGet(
 		const char * server, const char * request, int port,
@@ -565,6 +600,60 @@ void httpGet(
 		client.println(port) ;
 
 //		client.println("Connection: close");
+		client.println();
+
+		if (waitMillis>0) {
+			delay(waitMillis) ;
+
+			// If there are incoming bytes available
+			// from the server, read them and print them:
+			while (client.available()) {
+				char c = client.read();
+				Serial.write(c);
+			}
+		}
+//		Serial.printf(
+//				"Closing the connection with server %s:%d .\n", server, port
+//				) ;
+	} else {
+		Serial.printf("Could not connect to server %s:%d .\n", server, port) ;
+		stayHere() ;
+	}
+}
+
+//
+// Default values for request, port and wait time are defined in the file
+// MailNotifier.h
+//
+void httpPostForHomeAssistant(
+		const char * server, const char * request, int port,
+		int waitMillis) {
+	//
+	// Default port of 80 is used for web access but any port may be specified.
+	// Default wait time of 3 seconds (3000 milliseconds) is used but any
+	// wait time may be specified.  0 for the wait time means don't get
+	// response from the server.
+	//
+	WiFiClient client ;
+
+	if (client.connect(server, port)) {
+//		Serial.printf("Connected to server %s:%d .\n", server, port) ;
+
+		// Make a HTTP POST request for Home Assistant Webhooks:
+		client.print("POST ") ;
+		client.print(request) ;
+		client.println(" HTTP/2") ;
+
+		client.print("Host: ") ;
+		client.print(server) ;
+		client.print(":") ;
+		client.println(port) ;
+
+		client.println("user-agent: MailboxNotifier/1.0.0") ;
+
+		client.println("accept: */*") ;
+
+		//		client.println("Connection: close");
 		client.println();
 
 		if (waitMillis>0) {
