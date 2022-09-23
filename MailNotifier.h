@@ -8,6 +8,7 @@
 #define _MailNotifier_H_
 #include "Arduino.h"
 //add your includes for the project MailNotifier here
+#include "ESP8266WiFi.h"
 
 //#include <ESPAsyncTCP.h>
 //#include <ESPAsyncWebServer.h>
@@ -25,10 +26,6 @@ void ConnectStationToNetwork(
 		) ;
 boolean delayingIsDone(unsigned long &since, unsigned long time) ;
 void httpGet(
-		const char * server, const char * request="/", int port=80,
-		int waitMillis = 3000
-		) ;
-void httpPostForHomeAssistant(
 		const char * server, const char * request="/", int port=80,
 		int waitMillis = 3000
 		) ;

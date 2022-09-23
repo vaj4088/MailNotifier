@@ -1,6 +1,14 @@
 
 #include "MailNotifier.h"
-#include "ESP8266WiFi.h"
+
+//
+	// Get the private informations.
+	//
+#include "SSIDprivate.h"
+	//
+	// End of "Get the private information.".
+	//
+
 //
 // The following includes are used for OTA reprogramming.
 //
@@ -36,7 +44,7 @@
 // Define the local name or IP address to be used for debugging.
 // Coyote2021Linux = 192.168.1.66
 //
-#define Ian_LocalDebugAddress "Coyote2021Linux"
+#define Ian_LocalDebugAddress "192.168.1.68"
 
 //
 // Uncomment exactly one of these #define lines:
@@ -47,8 +55,8 @@
 //
 // Uncomment exactly one of these #define lines:
 //
-// #define debug
- #define noDebug
+// #define Ian_debug1
+ #define Ian_noDebug1
 
 //
 // Uncomment exactly one of these #define lines:
@@ -153,7 +161,7 @@ const char * updateMessage =
 //
 // Defined in SSID.private
 //
-// const char* makerRequest = "..." ;
+// const char* triggerRequest = "..." ;
 //
 
 #if defined Home
@@ -172,6 +180,10 @@ IPAddress subnet ( 255, 255, 255,   0) ;
 IPAddress dns1   ( 192, 168,   0, 100) ;
 IPAddress dns2   ( 192, 168,   0, 100) ;
 
+#endif
+
+#if defined Ian_LocalDebugViaSocket
+		WiFiClient debug ;
 #endif
 
 void setup()
@@ -193,14 +205,6 @@ void setup()
 
 	//
 	// Make unit a station, and connect to network.
-	//
-
-	//
-	// Get the private encrypted strings.
-	//
-#include "SSID.private"
-	//
-	// End of "Get the private encrypted strings.".
 	//
 
 	ConnectStationToNetwork(ssid, password);
@@ -237,6 +241,22 @@ void setup()
 	 *
  https://maker.ifttt.com/trigger/Mail_Notifier/with/key/<IFTTT_Service_key>
 	 *
+	 * but now want to use Aiden Shef's Home Assistant home automation
+	 * so do the equivalent of
+	 *
+	 * curl -X POST https://ha.shef.duckdns.org/api
+	 * /webhook
+	 * /ianshefwebhook4588\?subject=Test\#1\&message=Test202209041533
+	 * --trace-ascii -
+	 *
+	 * by using https (http over SSL) to access via POST
+	 *
+	 * ha.shef.duckdns.org
+	 *     using resource
+	 * /api/webhook/ianshefwebhook4588
+	 *     with parameters
+	 * ?subject=Test#1&message=Test202209041533
+	 *
 	 */
 
 		batteryVoltage = ESP.getVcc()*(0.00112016306998) ;
@@ -244,23 +264,23 @@ void setup()
 		// ESP.getVcc() and NOT ESP.getVCC().
 
 #if defined Ian_LocalDebugViaSocket
-		WiFiClient debug ;
 		debug.connect(Ian_LocalDebugAddress, Ian_LocalDebugSocket) ;
 
-		debug.print("Connected to" ) ;
+		debug.print("Connected to " ) ;
 		debug.print(Ian_LocalDebugAddress) ;
 		debug.print(" at port ") ;
 		debug.print(Ian_LocalDebugSocket) ;
 		debug.println(".") ;
 
 		debug.printf("\nBattery voltage is %f volts.\n", batteryVoltage) ;
-		debug.printf("Compiled on %s %s\n\n", __DATE__, __TIME__) ;
-		debug.flush() ;
-
-#elif defined Ian_NoLocalDebugViaSocket
+		debug.printf("Compiled on %s at %s\n\n", __DATE__, __TIME__) ;
+		//
+		// Sending "EOF_FOR_LOGGER" will close the connection
+		// and prepare for a new connection.
+		//
 #endif
 
-#if defined debug
+#if defined Ian_debug1
 
 //		httpGet("45.17.221.124", "/", 21280) ; // TABLO at home.
 		httpGet("12.153.148.59", "/", 80) ;    // www.smartmetertexas.com login
@@ -268,7 +288,7 @@ void setup()
 		Serial.printf("Compiled on %s %s\n\n", __DATE__, __TIME__) ;
 		Serial.flush() ;
 
-#elif defined noDebug
+#elif defined Ian_noDebug1
 
 		char request[REQUEST_SIZE] ;
 		snprintf(
@@ -276,7 +296,7 @@ void setup()
 				REQUEST_SIZE,
 //				"\"%s%#.2f (%s %s)\"",
 				"%s%#.2f (%s %s)",
-				makerRequest,
+				triggerRequest,
 				batteryVoltage,
 				__DATE__,
 				__TIME__
@@ -626,8 +646,12 @@ void httpGet(
 // MailNotifier.h
 //
 void httpPostForHomeAssistant(
-		const char * server, const char * request, int port,
-		int waitMillis) {
+		WiFiClient c=NULL,
+		const char * server="",
+		const char * request="/",
+		int port=80,
+		int waitMillis = 3000
+		) {
 	//
 	// Default port of 80 is used for web access but any port may be specified.
 	// Default wait time of 3 seconds (3000 milliseconds) is used but any
@@ -636,8 +660,36 @@ void httpPostForHomeAssistant(
 	//
 	WiFiClient client ;
 
-	if (client.connect(server, port)) {
-//		Serial.printf("Connected to server %s:%d .\n", server, port) ;
+	if (c==NULL) {
+		if (client.connect(server, port)) {
+			//  Good case!  Do nothing.
+			//	Serial.printf("Connected to server %s:%d .\n", server, port) ;
+		} else {
+			//
+			// Bad case!  Failed to connect.
+			// Try to display a message.
+			//
+#if defined Ian_LocalDebugViaSocket
+			debug.printf("Could not connect to server %s:%d .\n", server, port) ;
+			debug.printf("EOF_FOR_LOGGER") ;
+#endif
+			Serial.printf("Could not connect to server %s:%d .\n", server, port) ;
+			stayHere() ;
+		}
+	} else {
+
+		client=c ;
+
+	}
+
+#if defined Ian_LocalDebugViaSocket
+		debug.printf("Ready for httpPostForHomeAssistant, ") ;
+		debug.printf("connected to %s at port ", client.remoteIP().toString()) ;
+		debug.print(client.remotePort()) ;
+		debug.print(" for POST.") ;
+		debug.println() ;
+#endif
+
 
 		// Make a HTTP POST request for Home Assistant Webhooks:
 		client.print("POST ") ;
@@ -669,8 +721,5 @@ void httpPostForHomeAssistant(
 //		Serial.printf(
 //				"Closing the connection with server %s:%d .\n", server, port
 //				) ;
-	} else {
-		Serial.printf("Could not connect to server %s:%d .\n", server, port) ;
-		stayHere() ;
-	}
+
 }
