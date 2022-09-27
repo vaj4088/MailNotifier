@@ -1,13 +1,16 @@
 
-#include "MailNotifier.h"
+#include "../MailNotifier.h"
+#include <ESP8266HTTPClient.h>
+#include <WiFiClient.h>
+
 
 //
-	// Get the private informations.
-	//
+// Get the private informations.
+//
 #include "SSIDprivate.h"
-	//
-	// End of "Get the private information.".
-	//
+//
+// End of "Get the private information.".
+//
 
 //
 // The following includes are used for OTA reprogramming.
